@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 680" fill="none">
+  <!-- Architectural Paper Canvas -->
+  <rect width="1100" height="680" fill="#f1ebdf" />
+  
+  <!-- Outer Frame -->
+  <rect x="36" y="36" width="1028" height="608" stroke="#181c19" stroke-width="1.2" fill="none" />
+  <rect x="42" y="42" width="1016" height="596" stroke="#ded5c5" stroke-width="0.75" fill="none" />
+
+  <!-- Corner Crosshairs -->
+  <g stroke="#181c19" stroke-width="1">
+    <line x1="28" y1="36" x2="44" y2="36" />
+    <line x1="36" y1="28" x2="36" y2="44" />
+    <line x1="1056" y1="36" x2="1072" y2="36" />
+    <line x1="1064" y1="28" x2="1064" y2="44" />
+    <line x1="28" y1="644" x2="44" y2="644" />
+    <line x1="36" y1="636" x2="36" y2="652" />
+    <line x1="1056" y1="644" x2="1072" y2="644" />
+    <line x1="1064" y1="636" x2="1064" y2="652" />
+  </g>
+
+  <!-- Fine Technical Grid Lines -->
+  <g stroke="#e2d8c9" stroke-width="0.5" stroke-dasharray="2,4">
+    <line x1="42" y1="180" x2="1058" y2="180" />
+    <line x1="42" y1="360" x2="1058" y2="360" />
+    <line x1="42" y1="520" x2="1058" y2="520" />
+    <line x1="250" y1="42" x2="250" y2="638" />
+    <line x1="550" y1="42" x2="550" y2="638" />
+    <line x1="850" y1="42" x2="850" y2="638" />
+  </g>
+
+  <!-- Distant Hill Horizon -->
+  <path d="M42 510 Q180 470 320 485 T600 460 T880 490 T1058 480 L1058 550 L42 550 Z" fill="#e8dfd0" />
+  <path d="M42 525 Q240 500 450 515 T820 495 T1058 510 L1058 550 L42 550 Z" fill="#dfd5c4" />
+
+  <!-- Classical Colonnade Structure -->
+  <g stroke="#161a17" stroke-width="1.6" fill="#f8f4ec">
+    <polygon points="280,240 820,240 780,180 320,180" stroke-width="2" />
+    <line x1="260" y1="240" x2="840" y2="240" stroke-width="2.5" />
+    <line x1="290" y1="254" x2="810" y2="254" stroke-width="1.5" />
+
+    <!-- Tympanum Relief Inscription -->
+    <circle cx="550" cy="208" r="18" stroke-width="1.2" />
+    <circle cx="550" cy="208" r="12" stroke="#1d4d33" stroke-width="1" stroke-dasharray="3,3" />
+
+    <!-- Columns -->
+    <rect x="330" y="254" width="44" height="266" />
+    <rect x="470" y="254" width="44" height="266" />
+    <rect x="586" y="254" width="44" height="266" />
+    <rect x="726" y="254" width="44" height="266" />
+
+    <!-- Capitals -->
+    <path d="M322 254 H382 L374 266 H330 Z" />
+    <path d="M462 254 H522 L514 266 H470 Z" />
+    <path d="M578 254 H638 L630 266 H586 Z" />
+    <path d="M718 254 H778 L770 266 H726 Z" />
+
+    <!-- Column Bases -->
+    <rect x="322" y="520" width="60" height="14" />
+    <rect x="462" y="520" width="60" height="14" />
+    <rect x="578" y="520" width="60" height="14" />
+    <rect x="718" y="520" width="60" height="14" />
+
+    <!-- Platform Steps -->
+    <rect x="250" y="534" width="600" height="18" stroke-width="2" />
+    <line x1="220" y1="552" x2="880" y2="552" stroke-width="2.5" />
+  </g>
+
+  <!-- Architectural Shadow Hatching -->
+  <g stroke="#161a17" stroke-width="0.8" opacity="0.45">
+    <line x1="341" y1="266" x2="341" y2="520" />
+    <line x1="352" y1="266" x2="352" y2="520" />
+    <line x1="363" y1="266" x2="363" y2="520" />
+
+    <line x1="481" y1="266" x2="481" y2="520" />
+    <line x1="492" y1="266" x2="492" y2="520" />
+    <line x1="503" y1="266" x2="503" y2="520" />
+
+    <line x1="597" y1="266" x2="597" y2="520" />
+    <line x1="608" y1="266" x2="608" y2="520" />
+    <line x1="619" y1="266" x2="619" y2="520" />
+
+    <line x1="737" y1="266" x2="737" y2="520" />
+    <line x1="748" y1="266" x2="748" y2="520" />
+    <line x1="759" y1="266" x2="759" y2="520" />
+  </g>
+
+  <!-- Living Botanical Growth (Botanical Foliage) -->
+  <g fill="#1d4d33" stroke="#123523" stroke-width="1.2">
+    <!-- Vine climbing left column -->
+    <path d="M300 540 Q320 460 350 430 T330 360 T370 290 T340 230 T370 170" fill="none" stroke="#1d4d33" stroke-width="3.5" />
+    <path d="M320 480 Q340 440 330 400 T360 340" fill="none" stroke="#265c3e" stroke-width="2" />
+
+    <!-- Leaves -->
+    <path d="M310 510 C290 495 285 515 300 528 C310 535 320 520 310 510 Z" />
+    <path d="M335 460 C315 445 310 465 325 478 C335 485 345 470 335 460 Z" />
+    <path d="M355 420 C375 405 380 425 365 438 C355 445 345 430 355 420 Z" />
+    <path d="M325 375 C305 360 300 380 315 393 C325 400 335 385 325 375 Z" />
+    <path d="M360 320 C380 305 385 325 370 338 C360 345 350 330 360 320 Z" />
+    <path d="M335 270 C315 255 310 275 325 288 C335 295 345 280 335 270 Z" />
+    <path d="M360 215 C380 200 385 220 370 233 C360 240 350 225 360 215 Z" />
+
+    <!-- Canopy drapery -->
+    <path d="M360 240 Q450 265 550 235 Q650 215 750 250" fill="none" stroke="#1d4d33" stroke-width="2.8" />
+    <path d="M430 255 C445 280 430 295 420 285 C410 275 420 260 430 255 Z" />
+    <path d="M480 248 C495 270 480 285 470 275 C460 265 470 250 480 248 Z" />
+    <path d="M530 240 C548 265 532 280 522 270 C512 260 522 245 530 240 Z" />
+    <path d="M620 235 C635 258 620 270 610 262 C600 254 610 240 620 235 Z" />
+    <path d="M680 245 C698 270 682 285 672 275 C662 265 672 250 680 245 Z" />
+
+    <!-- Ferns on steps -->
+    <path d="M220 550 Q240 500 260 490" fill="none" stroke="#1d4d33" stroke-width="2" />
+    <path d="M245 520 C235 505 245 495 255 505 Z" />
+    <path d="M255 505 C265 490 275 500 265 515 Z" />
+
+    <!-- Central sapling tree -->
+    <path d="M550 534 Q545 440 555 380 Q560 340 550 310" fill="none" stroke="#1d4d33" stroke-width="3" />
+    <circle cx="550" cy="300" r="28" fill="#1d4d33" opacity="0.85" />
+    <circle cx="525" cy="315" r="22" fill="#265c3e" opacity="0.85" />
+    <circle cx="580" cy="315" r="24" fill="#1d4d33" opacity="0.85" />
+  </g>
+
+  <!-- Wanderer Silhouette -->
+  <g transform="translate(640, 482)">
+    <path d="M12 24 L4 52 L22 52 L17 24 Z" fill="#141715" />
+    <circle cx="14" cy="18" r="5" fill="#141715" />
+    <line x1="22" y1="12" x2="22" y2="52" stroke="#141715" stroke-width="1.5" />
+  </g>
+
+  <!-- Flight of birds in distant sky -->
+  <g stroke="#161a17" stroke-width="1.2" fill="none" opacity="0.6">
+    <path d="M210 140 Q220 132 230 140 Q240 132 250 140" />
+    <path d="M250 115 Q258 108 266 115 Q274 108 282 115" />
+    <path d="M840 130 Q850 122 860 130 Q870 122 880 130" />
+  </g>
+
+  <!-- Inscription Plate at bottom -->
+  <line x1="60" y1="590" x2="1040" y2="590" stroke="#161a17" stroke-width="1" />
+  <text x="60" y="618" font-family="'Agency FB', sans-serif" font-size="15" letter-spacing="4" fill="#161a17" font-weight="bold">FCORPSE ATELIER — STUDY 01: MONOLITH AND FLORA</text>
+  <text x="1040" y="618" text-anchor="end" font-family="'Agency FB', sans-serif" font-size="14" letter-spacing="3" fill="#1d4d33" font-weight="bold">DEBUT TITLE PROTOTYPE</text>
+</svg>

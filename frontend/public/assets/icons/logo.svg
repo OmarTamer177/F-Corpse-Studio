@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <!-- Minimalist Architectural Emblem in Ink Black & Botanical Green -->
+  <!-- Architectural Cross & Frame -->
+  <rect x="10" y="10" width="80" height="80" stroke="#141815" stroke-width="2" fill="none" />
+  <line x1="10" y1="50" x2="90" y2="50" stroke="#141815" stroke-width="0.75" stroke-dasharray="2,2" />
+  <line x1="50" y1="10" x2="50" y2="90" stroke="#141815" stroke-width="0.75" stroke-dasharray="2,2" />
+
+  <!-- Bold Architectural 'F' Mark -->
+  <path d="M28 26 H72 V38 H44 V46 H64 V56 H44 V74 H30 L28 26 Z" fill="#141815" />
+
+  <!-- Botanical Sprout of Life (Nature & Passion) -->
+  <path d="M50 44 C58 32 74 34 76 48 C76 60 62 70 50 66 C48 58 46 52 50 44 Z" fill="#1b4d34" />
+  <path d="M52 48 C60 48 68 54 66 60" stroke="#f4efe6" stroke-width="1.5" stroke-linecap="round" />
+</svg>
