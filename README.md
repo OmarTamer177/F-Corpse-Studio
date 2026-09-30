@@ -1,75 +1,81 @@
-# FCorpse Studio — Platform (Task 9: Role-Based Access Control)
+# FCorpse Studio — Digital Platform & Management Suite
 
-FCorpse is the official web platform for **FCorpse Studio**, an independent game studio dedicated to handcrafted game development. The platform serves as the studio's public-facing website, services showcase, customer request & commission portal, blog, contact system, and internal company management suite.
+[![CI Pipeline](https://github.com/OmarTamer177/F-Corpse-Studio/actions/workflows/ci.yml/badge.svg)](https://github.com/OmarTamer177/F-Corpse-Studio/actions)
+![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)
+![React 19](https://img.shields.io/badge/react-19-61dafb.svg)
+![Vite 8](https://img.shields.io/badge/vite-8-646cff.svg)
+![PostgreSQL](https://img.shields.io/badge/postgresql-15-336791.svg)
+![Docker Compose](https://img.shields.io/badge/docker%20compose-orchestrated-2496ed.svg)
+
+**FCorpse Studio** is the official web platform for an independent game development studio. The application serves as the studio's public-facing digital storefront, commissions and custom development portal, engineering dispatches blog, and internal company operations console.
 
 ---
 
-## Overview
+## Key Features
 
-The application is a **decoupled full-stack project** featuring an enterprise-grade **Role-Based Access Control (RBAC)** architecture alongside customer request dispatch, search, and catalog management:
-
-| Component   | Description                                                                 |
-|-------------|-----------------------------------------------------------------------------|
-| **Backend** | Flask REST API — dynamic SQLAlchemy search, multi-criteria filtering, RBAC middleware, JWT auth, requests |
-| **Frontend**| React SPA (Vite) — role-aware navigation, staff operations console, team access & role management directory |
-| **Database**| PostgreSQL — persistent storage for services, blogs, users with roles, requests |
-| **RBAC**    | Fine-grained role and permission system (`admin`, `employee`, `customer`) with route protection decorators |
-| **Testing** | Modular Unit Test Suite (`unittest`) with 43 tests across all modules (100% pass) |
+* **Services Catalog & Commissions**: Interactive showcase of game development, custom shader engineering, audio design, and QA evaluation services with request quotation modals.
+* **Search & Multi-Criteria Filtering**: Dynamic, real-time search across services and articles filtering by category, pricing model, and chronological sorting.
+* **Client Self-Service Portal**: Authenticated customer dashboard to track project statuses, view studio quotes, and update personal account profiles.
+* **Role-Based Access Control (RBAC)**: Multi-tiered permission architecture:
+  * **Administrator**: Complete control over catalog offerings, articles, customer requests, operational statuses, and team role assignments.
+  * **Regular Employee**: Operational access to search, filter, and review requests, update statuses, attach internal progress notes, and adjust estimates without deletion capabilities.
+  * **Customer**: Self-service request tracking and profile management.
+* **Team Operations Console**: Dedicated management dashboard for staff members to review incoming commissions and manage organizational members.
+* **Full-Stack Containerization**: One-command orchestration via Docker Compose powering PostgreSQL, Flask with Gunicorn, and a React SPA served through Nginx.
+* **Automated CI/CD Pipeline**: GitHub Actions workflow automatically executing 43 hermetic unit tests and frontend production build checks on every push and pull request.
 
 ---
 
 ## Tech Stack
 
-| Layer     | Technology                            |
-|-----------|---------------------------------------|
-| Frontend  | React 19, Vite 8, React Router 7, Vanilla CSS |
-| Backend   | Python 3.11, Flask, Flask-JWT-Extended, Flask-CORS |
-| Database  | PostgreSQL, SQLAlchemy ORM (SQLite for test isolation)|
-| Auth/RBAC | JWT (JSON Web Tokens), Werkzeug password hashing, RBAC decorators |
+| Layer | Technology |
+| :--- | :--- |
+| **Frontend** | React 19, Vite, React Router 7, Vanilla CSS, Lucide Icons |
+| **Frontend Web Server** | Nginx Alpine (Reverse proxy & SPA routing) |
+| **Backend API** | Python 3.11, Flask, Gunicorn WSGI, Flask-JWT-Extended, Flask-CORS |
+| **Database & ORM** | PostgreSQL 15, SQLAlchemy ORM (SQLite in-memory for testing) |
+| **Containerization** | Docker, Docker Compose (Multi-stage builds) |
+| **CI / Automation** | GitHub Actions |
 
 ---
 
-## Project Structure (Monorepo Architecture)
+## Architecture & Directory Layout
 
-```
-Task 9/
-├── backend/                       # Isolated Python/Flask backend service
-│   ├── routes/                    # Route Blueprints (auth, requests, services, blogs, contact)
+```text
+F-Corpse-Studio/
+├── .github/
+│   └── workflows/
+│       └── ci.yml                 # Automated CI pipeline
+├── backend/                       # Python Flask backend service
+│   ├── routes/                    # API Blueprints (auth, requests, services, blogs, contact)
 │   ├── tests/                     # Test suites
-│   │   ├── unit/                  # 43 hermetic unit tests (SQLite in-memory)
-│   │   └── e2e/                   # End-to-end integration tests (RBAC, search, workflow)
-│   ├── app.py                     # App factory, CORS, /api/health, /api/admin/verify
+│   │   ├── unit/                  # Hermetic unit tests (43 passing tests)
+│   │   ├── e2e/                   # End-to-end integration workflows
+│   │   └── system_test.py         # Full-stack system verification script
+│   ├── app.py                     # Application factory & health checks
 │   ├── config.py                  # Structured config management (dev, test, prod)
-│   ├── extensions.py              # Shared Flask extensions (db, jwt, cors)
-│   ├── models.py                  # SQLAlchemy models (User with role & permissions, etc.)
-│   ├── rbac.py                    # Role definitions, granular permissions, decorators
-│   ├── seed_db.py                 # Database reset & seeding script
-│   ├── run_tests.py               # Unified test runner with CLI flags (--unit, --e2e, --all)
+│   ├── extensions.py              # Initialized extensions (db, jwt, cors)
+│   ├── models.py                  # SQLAlchemy schema definitions
+│   ├── rbac.py                    # Role definitions, permissions, and route decorators
+│   ├── seed_db.py                 # Database seeding script
+│   ├── run_tests.py               # Unified test runner with CLI flags
 │   ├── requirements.txt           # Pinned python dependencies
 │   ├── Dockerfile                 # Production backend container definition
 │   └── .dockerignore
 │
-├── frontend/                      # Isolated React + Vite single-page application
+├── frontend/                      # React / Vite single-page application
 │   ├── src/
-│   │   ├── services/
-│   │   │   └── api.js             # Centralized API client (dynamic environment base URL)
-│   │   ├── context/
-│   │   │   └── AuthContext.jsx    # Global auth & RBAC state (role, permissions, guards)
-│   │   ├── components/            # Navbar, Footer, AdminRoute, Modals
-│   │   ├── pages/                 # Home, Services, Blogs, Dashboard, Admin, Login, Register, Contact
-│   │   ├── App.jsx
-│   │   ├── main.jsx
-│   │   └── index.css
-│   ├── nginx.conf                 # Production Nginx reverse-proxy & SPA routing
-│   ├── Dockerfile                 # Multi-stage production container (Node 20 -> Nginx Alpine)
+│   │   ├── components/            # Reusable UI components & route guards
+│   │   ├── context/               # AuthContext (auth state, permissions, role helpers)
+│   │   ├── pages/                 # Home, Services, Blogs, Dashboard, Admin, Login, Register
+│   │   ├── services/              # Centralized API client (dynamic environment base URL)
+│   │   └── App.jsx
+│   ├── nginx.conf                 # Production Nginx reverse-proxy & routing config
+│   ├── Dockerfile                 # Multi-stage container (Node 20 -> Nginx Alpine)
 │   ├── package.json
 │   └── .dockerignore
 │
-├── .github/
-│   └── workflows/
-│       └── ci.yml                 # Automated CI pipeline (Backend tests + Frontend build)
-│
-├── docker-compose.yml             # Full-stack container orchestration (db + backend + frontend)
+├── docker-compose.yml             # Orchestration for db, backend, and frontend
 ├── .env.example                   # Environment configuration template
 ├── run_tests.py                   # Root delegator runner
 └── README.md
@@ -77,282 +83,163 @@ Task 9/
 
 ---
 
-## Running with Docker Compose
+## Getting Started
 
-The complete full-stack environment (PostgreSQL 15, Flask backend with Gunicorn, and React frontend with Nginx) can be started with a single command:
+### Option 1: Running with Docker Compose (Recommended)
 
+The easiest way to start the complete stack (PostgreSQL, Backend API, and Frontend web app):
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/OmarTamer177/F-Corpse-Studio.git
+   cd F-Corpse-Studio
+   ```
+
+2. **Create your environment configuration**:
+   ```bash
+   cp .env.example .env
+   ```
+
+3. **Build and launch containers**:
+   ```bash
+   docker compose up -d --build
+   ```
+
+4. **Seed sample data (Demo accounts & services)**:
+   ```bash
+   docker compose exec backend python seed_db.py
+   ```
+
+#### Live Container Access:
+* **Frontend Web Application**: [http://localhost:3000](http://localhost:3000)
+* **Backend REST API**: [http://localhost:5000](http://localhost:5000)
+* **Backend Healthcheck**: [http://localhost:5000/api/health](http://localhost:5000/api/health)
+* **PostgreSQL Database**: `localhost:5433` (mapped from container `5432`)
+
+To stop the containers:
 ```bash
-# Copy sample environment configuration
-cp .env.example .env
-
-# Build and start all containers in detached mode
-docker compose up -d --build
-```
-
-### Container Endpoints:
-* **Frontend Web App**: `http://localhost:3000` (Served via Nginx, with `/api/` reverse-proxied internally)
-* **Backend REST API**: `http://localhost:5000` (Direct API access & `/api/health` status)
-* **PostgreSQL Database**: `localhost:5433` (Mapped to container port `5432` to avoid host collisions, volume `db_data`)
-
-To view container logs or stop the stack:
-```bash
-# View live logs
-docker compose logs -f
-
-# Stop and remove containers
 docker compose down
 ```
 
 ---
 
-## Continuous Integration (GitHub Actions)
+### Option 2: Running Locally (Development Mode)
 
-The repository includes an automated CI workflow at `.github/workflows/ci.yml` that triggers on every push and pull request targeting `main` or `master`:
-1. **Backend Job**: Sets up Python 3.11, caches pip dependencies, installs `backend/requirements.txt`, and runs the hermetic 43-unit test suite (`python run_tests.py --mode unit`).
-2. **Frontend Job**: Sets up Node 20, caches npm packages, installs dependencies (`npm ci`), and verifies production TypeScript/JSX compilation (`npm run build`).
-
----
-
-## Default Accounts & Roles
-
-| Role | Email | Password | Platform Permissions |
-| :--- | :--- | :--- | :--- |
-| **Administrator** | `admin@fcorpse.com` | `admin123` | **Full Platform Control:** Manage & delete services and blogs, view & search all customer requests, update status/notes/cost, permanently delete requests, reassign user roles. |
-| **Regular Employee** | `employee@fcorpse.com` | `employee123` | **Operational Access:** View & search all customer requests, view KPI stats, update request status, priority, admin progress notes, and quotes. *Forbidden from deleting requests or managing service offerings.* |
-| **Client Customer** | `elena.vance@studio.com` | `customer123` | **Customer Access:** Submit new service requests, view and track personal requests in Dashboard, manage personal contact profile. *Forbidden from staff endpoints.* |
-
-*Additional accounts can be registered at `/register`.*
-
----
-
-## How to Run
-
-### 1. Database Setup
-
-Ensure PostgreSQL is running and the database `voltix_task` exists:
-
-```sql
-CREATE DATABASE voltix_task;
-```
-
-> Connection string default: `postgresql://postgres:123456@localhost:5432/voltix_task`  
-> Configurable in `app.py` or via the `DATABASE_URL` environment variable.
-
-### 2. Install Dependencies
-
+#### 1. Backend Setup
 ```bash
-# Python Backend
-pip install flask flask-sqlalchemy flask-jwt-extended flask-cors psycopg2-binary werkzeug
+# Navigate to backend directory
+cd backend
 
-# React Frontend
-cd frontend
-npm install
-cd ..
-```
+# Create and activate virtual environment
+python -m venv venv
+source venv/bin/activate    # On Windows: venv\Scripts\activate
 
-### 3. Seed Database
+# Install dependencies
+pip install -r requirements.txt
 
-Resets tables and seeds admin, sample customer, services, and realistic requests across multiple statuses:
-
-```bash
+# Seed the database
 python seed_db.py
-```
 
-### 4. Start Servers
-
-**Terminal 1 — Backend (Flask API on port 5000):**
-```bash
+# Start the Flask API server
 python app.py
 ```
+Backend API will be running at `http://localhost:5000`.
 
-**Terminal 2 — Frontend (Vite Dev Server on port 5173):**
+#### 2. Frontend Setup
 ```bash
+# Navigate to frontend directory
 cd frontend
+
+# Install dependencies
+npm install
+
+# Start Vite development server
 npm run dev
 ```
-
-Visit the application at: **http://localhost:5173**
+Frontend development server will be running at `http://localhost:5173`.
 
 ---
 
-## Running Unit & Integration Tests
+## Default Accounts & Credentials
 
-The project includes a comprehensive, isolated unit testing suite utilizing Python's `unittest` framework with in-memory SQLite:
+The seed script (`python seed_db.py`) generates the following accounts for evaluation:
+
+| Role | Email | Password | Access Capabilities |
+| :--- | :--- | :--- | :--- |
+| **Administrator** | `admin@fcorpse.com` | `admin123` | **Full Platform Control:** Manage catalog services, publish articles, view all customer requests, update quotes, permanently delete records, and assign user roles. |
+| **Regular Employee** | `employee@fcorpse.com` | `employee123` | **Operational Access:** View and search all customer requests, view KPI analytics, update status and admin progress notes, and adjust estimates. *Cannot delete requests or alter service offerings.* |
+| **Customer** | `elena.vance@studio.com` | `customer123` | **Client Access:** Submit requests, track personal submissions in Client Dashboard, manage account profile. *Forbidden from staff endpoints.* |
+
+*New customer accounts can also be created via the public registration page.*
+
+---
+
+## Testing & Verification
+
+The project includes both isolated unit test suites and comprehensive end-to-end system verification tests:
 
 ```bash
-# Run all unit tests with execution summary
+# Run all hermetic unit tests (43 tests in in-memory SQLite)
 python run_tests.py
 
-# Alternatively via unittest module
-python -m unittest discover tests
+# Run unit tests explicitly
+python backend/run_tests.py --mode unit
 
-# Run end-to-end integration verification (against running Flask server)
-python test_e2e.py
+# Run full system test against live database & endpoints
+python backend/tests/system_test.py
 ```
 
-### Test Coverage Highlights
-- **`test_models.py`**: Model defaults, constraints, serialization (`to_dict`), and `User` / `ServiceRequest` relationships.
-- **`test_requests_api.py`**:
-  - Guest request submission (`POST /api/requests`) with validation checks.
-  - Authenticated request submission with automatic `user_id` association.
-  - Personal request retrieval (`GET /api/requests/my`) and route protection (401).
-  - Detail inspection permissions (owner and admin allowed; third-party blocked with 403).
-  - Admin request listing, filtering (`?status=...`, `?priority=...`), and full-text search (`?search=...`).
-  - Admin live KPI metrics (`GET /api/requests/stats`).
-  - Admin status transition (`PUT /api/requests/<id>`), priority updates, quotes, and notes.
-  - Admin request deletion (`DELETE /api/requests/<id>`) and permission enforcement.
-- **`test_services_and_auth.py`**: Regression testing for services catalog, JWT issuance, and profile endpoints.
-
----
-
-## Customer Request Management Flow (Task 7)
-
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                        CUSTOMER WORKFLOW                               │
-└────────────────────────────────────────────────────────────────────────┘
-          │
-          ├──▶ 1. Visit /services
-          │     Click "Request Service" on card OR "+ Submit Service Request"
-          │
-          ├──▶ 2. Monograph Commission Modal
-          │     - Auto-populates Name, Email, Phone if logged in
-          │     - Selects service title & project priority (Normal, Urgent, etc.)
-          │     - Inputs project scope, deliverables, timeline
-          │
-          ├──▶ 3. Submission (`POST /api/requests`)
-          │     - Handled by @jwt_required(optional=True)
-          │     - Stored with initial status 'Pending'
-          │     - Displays confirmation modal with reference `#SR-{id}`
-          │
-          └──▶ 4. Client Dashboard (`/dashboard`)
-                - "MY SERVICE REQUESTS" section shows live status updates
-                - Inspects studio progress updates & estimated quote
-```
-
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                        COMPANY ADMIN WORKFLOW                          │
-└────────────────────────────────────────────────────────────────────────┘
-          │
-          ├──▶ 1. Admin Control Suite (`/admin`)
-          │     Navigate to `03 — CUSTOMER REQUESTS`
-          │
-          ├──▶ 2. KPI Overview Cards
-          │     Real-time counters: Total, Pending, In Review, In Progress, Completed, Rejected
-          │
-          ├──▶ 3. Filter & Search Toolbar
-          │     - Filter pills by status with dynamic counters
-          │     - Priority selector
-          │     - Real-time search across client, email, company, service & message
-          │
-          ├──▶ 4. Dispatch Table & Status Management
-          │     - 1-click status dropdown selector for quick processing
-          │     - "Inspect" button opening full Request Inspector Modal
-          │
-          └──▶ 5. Request Inspector Modal
-                - Review client profile & account status (Registered Member vs Guest)
-                - Full project message reading pane
-                - Update status ('Pending', 'In Review', 'In Progress', 'Completed', 'Rejected')
-                - Adjust priority ('Low', 'Normal', 'High', 'Urgent')
-                - Enter Estimated Cost / Quote Estimate (visible to customer)
-                - Enter Internal & Client Progress Notes (displayed on customer dashboard)
+### Running Tests in Docker:
+```bash
+docker compose exec backend python run_tests.py
+docker compose exec backend python tests/system_test.py
 ```
 
 ---
 
-## Database Models
+## Core API Endpoints
 
-### `ServiceRequest` (Task 7)
+### Authentication & RBAC
+* `POST /api/auth/register` — Register a new customer account (strictly customer role).
+* `POST /api/auth/login` — Authenticate and receive a JWT access token.
+* `GET /api/auth/me` — Retrieve profile data and granted permissions.
+* `GET /api/auth/roles` — Retrieve available system roles and permission sets.
+* `GET /api/auth/users` — List registered users (Staff only).
+* `PUT /api/auth/users/<id>/role` — Change user role (Admin only).
+* `POST /api/auth/users` — Onboard new staff team member (Admin only).
+* `POST /api/admin/verify` — Verify staff / administrator authorization.
 
-| Column           | Type         | Constraints                | Notes                                            |
-|------------------|--------------|----------------------------|--------------------------------------------------|
-| `id`             | Integer      | Primary Key, Auto-increment| Unique request reference identifier             |
-| `user_id`        | Integer      | Nullable, Foreign Key      | Linked to `user.id` (set null on delete)         |
-| `service_id`     | Integer      | Nullable                   | Reference to catalog service if applicable       |
-| `service_title`  | String(200)  | Not Null                   | Title of service or custom project name          |
-| `name`           | String(100)  | Not Null                   | Customer full name                               |
-| `email`          | String(120)  | Not Null                   | Customer contact email                           |
-| `phone`          | String(50)   | Nullable                   | Optional telephone number                        |
-| `company`        | String(150)  | Nullable                   | Client organization / studio                     |
-| `message`        | Text         | Not Null                   | Detailed project scope and requirements          |
-| `status`         | String(50)   | Not Null, Default: Pending | `Pending`, `In Review`, `In Progress`, `Completed`, `Rejected` |
-| `priority`       | String(20)   | Not Null, Default: Normal  | `Low`, `Normal`, `High`, `Urgent`                |
-| `admin_notes`    | Text         | Nullable                   | Studio progress update / internal notes          |
-| `estimated_cost` | String(100)  | Nullable                   | Official quote (e.g. `"$15,000 - $20,000"`)      |
-| `created_at`     | DateTime     | Not Null, Auto-set         | Submission timestamp                             |
-| `updated_at`     | DateTime     | Not Null, Auto-update      | Last modification timestamp                      |
+### Services & Dispatches
+* `GET /api/services` — Public services catalog with search, category, pricing, and sort filters.
+* `GET /api/services/meta` — Service categories and pricing model metadata.
+* `POST /api/services` — Create a new service (Admin only).
+* `PUT /api/services/<id>` — Modify service offering (Admin only).
+* `DELETE /api/services/<id>` — Remove service offering (Admin only).
+* `GET /api/blogs` — Public blog dispatches with search, author, and category filters.
+* `GET /api/blogs/meta` — Blog categories and authors metadata.
 
-### `Service`
+### Customer Requests & Management
+* `POST /api/requests` — Submit a service request / commission inquiry.
+* `GET /api/requests/my` — Customer retrieves personal submitted requests.
+* `GET /api/requests` — Staff views and filters all customer requests (Staff only).
+* `GET /api/requests/stats` — KPI analytics across request statuses (Staff only).
+* `GET /api/requests/<id>` — View request details (Owner or Staff).
+* `PUT /api/requests/<id>` — Update status, priority, admin notes, and quote (Staff only).
+* `DELETE /api/requests/<id>` — Permanently delete a request (Admin only).
 
-| Column        | Type         | Constraints                |
-|---------------|--------------|----------------------------|
-| `id`          | Integer      | Primary Key, Auto-increment|
-| `title`       | String(200)  | Not Null                   |
-| `description` | Text         | Not Null                   |
-| `icon`        | String(50)   | Nullable                   |
-| `price`       | String(100)  | Nullable                   |
-| `created_at`  | DateTime     | Not Null, Auto-set         |
-| `updated_at`  | DateTime     | Not Null, Auto-update      |
-
-### `User`
-
-| Column          | Type         | Constraints                | Notes                    |
-|-----------------|--------------|----------------------------|--------------------------|
-| `id`            | Integer      | Primary Key, Auto-increment|                          |
-| `email`         | String(120)  | Unique, Not Null           | Used for login           |
-| `password_hash` | String(256)  | Not Null                   | Werkzeug hashed          |
-| `is_admin`      | Boolean      | Not Null, Default: False   | Role flag                |
-| `first_name`    | String(50)   | Not Null                   |                          |
-| `last_name`     | String(50)   | Not Null                   |                          |
-| `age`           | Integer      | Nullable                   | Profile detail           |
-| `phone`         | String(20)   | Nullable                   | Profile detail           |
-| `bio`           | Text         | Nullable                   | Profile detail           |
-| `created_at`    | DateTime     | Not Null, Auto-set         | Registration timestamp   |
+### System & Health
+* `GET /api/health` — Returns system status and database connectivity.
 
 ---
 
-## API Reference
+## Continuous Integration
 
-### Customer Requests — `/api/requests` (Task 7)
-
-| Method | Endpoint    | Auth            | Body / Params                                                          | Description                                                   |
-|--------|-------------|-----------------|------------------------------------------------------------------------|---------------------------------------------------------------|
-| `POST` | `/`         | Optional JWT    | `{ name, email, service_title, message, phone?, company?, priority? }`   | Submit service request (auto-associates member if logged in)  |
-| `GET`  | `/my`       | JWT (Customer)  | —                                                                      | List personal service requests & track live status in portal  |
-| `GET`  | `/:id`      | JWT (Owner/Adm) | —                                                                      | Get full details for a single request                         |
-| `GET`  | `/`         | JWT (Admin)     | `?status=...&priority=...&search=...`                                  | List all requests with status/priority filter & keyword search|
-| `GET`  | `/stats`    | JWT (Admin)     | —                                                                      | KPI metric counts (total, pending, in review, etc.)           |
-| `PUT`  | `/:id`      | JWT (Admin)     | `{ status?, priority?, admin_notes?, estimated_cost? }`                | Admin updates status, priority, studio progress notes, quote  |
-| `DELETE`| `/:id`     | JWT (Admin)     | —                                                                      | Admin deletes a service request                               |
-
-### Services — `/api/services`
-
-| Method | Endpoint | Auth        | Body                                             | Description            |
-|--------|----------|-------------|--------------------------------------------------|------------------------|
-| `GET`  | `/`      | None        | —                                                | List all services      |
-| `GET`  | `/:id`   | None        | —                                                | Get a single service   |
-| `POST` | `/`      | JWT (Admin) | `{ title, description, icon?, price? }`          | Create a new service   |
-| `PUT`  | `/:id`   | JWT (Admin) | `{ title?, description?, icon?, price? }`        | Update service details |
-| `DELETE`| `/:id`  | JWT (Admin) | —                                                | Delete a service       |
-
-### Authentication — `/api/auth`
-
-| Method | Endpoint    | Auth     | Body                                                         | Description                      |
-|--------|-------------|----------|---------------------------------------------------------------|----------------------------------|
-| `POST` | `/register` | None     | `{ email, password, first_name, last_name, age?, phone?, bio? }`| Register a new user              |
-| `POST` | `/login`    | None     | `{ email, password }`                                         | Login, returns JWT + user object |
-| `GET`  | `/me`       | JWT      | —                                                             | Get current user's profile       |
-| `PUT`  | `/me`       | JWT      | `{ first_name?, last_name?, age?, phone?, bio? }`             | Update current user's profile    |
+Every push and pull request to `main` triggers automated validation via GitHub Actions:
+1. **Backend Testing**: Sets up Python 3.11, installs pinned requirements, and executes the 43-test unit test suite.
+2. **Frontend Build Verification**: Sets up Node 20, installs dependencies, and verifies clean production asset compilation (`npm run build`).
 
 ---
 
-## Status Badge Visual System
+## License
 
-| Status        | Theme Color        | Background Tint               | Border Token                   |
-|---------------|--------------------|-------------------------------|--------------------------------|
-| `Pending`     | Warm Gold Amber    | `rgba(180, 120, 24, 0.14)`    | `rgba(180, 120, 24, 0.45)`     |
-| `In Review`   | Sapphire Steel     | `rgba(43, 108, 176, 0.14)`    | `rgba(43, 108, 176, 0.45)`     |
-| `In Progress` | Royal Violet       | `rgba(107, 70, 193, 0.14)`    | `rgba(107, 70, 193, 0.45)`     |
-| `Completed`   | Botanical Green    | `rgba(27, 77, 52, 0.14)`      | `rgba(27, 77, 52, 0.45)`       |
-| `Rejected`    | Crimson Rust       | `rgba(156, 47, 37, 0.14)`     | `rgba(156, 47, 37, 0.45)`      |
+This project is licensed under the MIT License.

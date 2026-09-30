@@ -4,12 +4,20 @@ import os
 import time
 import argparse
 
+# Set testing environment variables before any application imports
+os.environ.setdefault('FLASK_ENV', 'testing')
+os.environ.setdefault('DATABASE_URL', 'sqlite:///:memory:')
+
 # Ensure backend root is on sys.path
 BACKEND_DIR = os.path.abspath(os.path.dirname(__file__))
 if BACKEND_DIR not in sys.path:
     sys.path.insert(0, BACKEND_DIR)
 
 def run_unit_tests():
+    # Force hermetic testing configuration for unit tests
+    os.environ['FLASK_ENV'] = 'testing'
+    os.environ['DATABASE_URL'] = 'sqlite:///:memory:'
+
     print("\n" + "=" * 70)
     print("FCORPSE STUDIO — UNIT TEST SUITE")
     print("Hermetic in-memory SQLite isolation (no external DB required)")

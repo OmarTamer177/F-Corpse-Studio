@@ -42,18 +42,20 @@ def create_app(config_name_or_dict=None):
     app.register_blueprint(requests_bp, url_prefix='/api/requests')
     
     # Create tables & migrate schema if needed
-    with app.app_context():
-        import models
-        db.create_all()
-        try:
-            with db.engine.connect() as conn:
-                db_uri = app.config.get('SQLALCHEMY_DATABASE_URI', '')
-                if 'postgresql' in db_uri:
-                    conn.execute(db.text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS role VARCHAR(50) DEFAULT \'customer\' NOT NULL;'))
-                    conn.execute(db.text("UPDATE \"user\" SET role = 'admin' WHERE is_admin = true AND (role IS NULL OR role = 'customer');"))
-                    conn.commit()
-        except Exception:
-            pass
+    if not app.config.get('TESTING'):
+        with app.app_context():
+            try:
+                import models
+                db.create_all()
+                with db.engine.connect() as conn:
+                    db_uri = app.config.get('SQLALCHEMY_DATABASE_URI', '')
+                    if 'postgresql' in db_uri:
+                        conn.execute(db.text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS role VARCHAR(50) DEFAULT \'customer\' NOT NULL;'))
+                        conn.execute(db.text("UPDATE \"user\" SET role = 'admin' WHERE is_admin = true AND (role IS NULL OR role = 'customer');"))
+                        conn.commit()
+            except Exception as e:
+                import logging
+                logging.getLogger(__name__).warning(f"Database initialization deferred or skipped: {e}")
 
     # Health Check Endpoint for Docker & Orchestration
     @app.route('/api/health', methods=['GET'])

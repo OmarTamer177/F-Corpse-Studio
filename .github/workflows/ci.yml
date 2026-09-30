@@ -30,6 +30,9 @@ jobs:
 
       - name: Run Hermetic Unit Test Suite
         working-directory: ./backend
+        env:
+          FLASK_ENV: testing
+          DATABASE_URL: sqlite:///:memory:
         run: |
           python run_tests.py --mode unit
 
