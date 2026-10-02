@@ -35,6 +35,7 @@ const Navbar = () => {
           {user ? (
             <NavDropdown label="Account" alignRight>
               <Link to="/dashboard">Dashboard</Link>
+              <Link to="/documents">Documents</Link>
               {staffAccess && (
                 <Link to="/admin">{isAdmin || user?.is_admin ? 'Admin Panel' : 'Staff Operations'}</Link>
               )}
@@ -73,6 +74,7 @@ const Navbar = () => {
             <>
               <span className="mobile-section-heading">Account</span>
               <Link to="/dashboard" className="mobile-link" onClick={closeMobile}>Dashboard</Link>
+              <Link to="/documents" className="mobile-link" onClick={closeMobile}>Documents</Link>
               {staffAccess && (
                 <Link to="/admin" className="mobile-link" onClick={closeMobile}>
                   {isAdmin || user?.is_admin ? 'Admin Suite' : 'Staff Operations'}

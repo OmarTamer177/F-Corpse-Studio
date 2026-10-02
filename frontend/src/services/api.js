@@ -65,6 +65,23 @@ export const apiClient = {
     });
     return res;
   },
+
+  upload: async (endpoint, formData, options = {}) => {
+    const url = endpoint.startsWith('http') ? endpoint : `${API_BASE}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
+    const token = localStorage.getItem('token');
+    const headers = { ...options.headers };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    // Note: Do NOT set Content-Type header so browser automatically sets multipart/form-data with boundary
+    const res = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: formData,
+      ...options,
+    });
+    return res;
+  },
 };
 
 export default apiClient;

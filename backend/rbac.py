@@ -21,17 +21,25 @@ ROLE_PERMISSIONS = {
         'blogs:manage',
         'users:view',
         'users:manage_roles',
+        'documents:view_all',
+        'documents:upload',
+        'documents:delete',
     },
     ROLE_EMPLOYEE: {
         'requests:view_all',
         'requests:view_stats',
         'requests:update',
         'users:view',
+        'documents:view_all',
+        'documents:upload',
     },
     ROLE_CUSTOMER: {
         'requests:create',
         'requests:view_own',
         'profile:manage',
+        'documents:upload',
+        'documents:view_own',
+        'documents:delete_own',
     },
 }
 

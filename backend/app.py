@@ -33,6 +33,7 @@ def create_app(config_name_or_dict=None):
     from routes.contact import contact_bp
     from routes.services import services_bp
     from routes.requests import requests_bp
+    from routes.documents import documents_bp
     
     # Register blueprints
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
@@ -40,6 +41,20 @@ def create_app(config_name_or_dict=None):
     app.register_blueprint(contact_bp, url_prefix='/api/contact')
     app.register_blueprint(services_bp, url_prefix='/api/services')
     app.register_blueprint(requests_bp, url_prefix='/api/requests')
+    app.register_blueprint(documents_bp, url_prefix='/api/documents')
+
+    # Ensure upload directory exists
+    upload_folder = app.config.get('UPLOAD_FOLDER')
+    if upload_folder:
+        os.makedirs(upload_folder, exist_ok=True)
+
+    # Global handler for file uploads exceeding MAX_CONTENT_LENGTH
+    @app.errorhandler(413)
+    def request_entity_too_large(error):
+        return jsonify({
+            "error": "File size exceeds the 25MB limit.",
+            "message": "Please reduce the file size or compress your asset before uploading."
+        }), 413
     
     # Create tables & migrate schema if needed
     if not app.config.get('TESTING'):

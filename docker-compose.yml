@@ -38,6 +38,8 @@ services:
       HOST: 0.0.0.0
     ports:
       - "5000:5000"
+    volumes:
+      - uploads_data:/app/uploads
     depends_on:
       db:
         condition: service_healthy
@@ -68,6 +70,8 @@ services:
 
 volumes:
   db_data:
+    driver: local
+  uploads_data:
     driver: local
 
 networks:

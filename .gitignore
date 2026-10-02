@@ -54,12 +54,14 @@ frontend/dist-ssr/
 *.local
 
 # ==========================================
-# Databases, Data & Logs
+# Databases, Data, Uploads & Logs
 # ==========================================
 *.sqlite
 *.sqlite3
 *.db
 postgres_data/
+backend/uploads/
+backend/test_uploads*/
 *.log
 
 # ==========================================

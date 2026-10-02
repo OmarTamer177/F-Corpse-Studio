@@ -13,6 +13,7 @@ import Contact from './pages/Contact';
 import Blogs from './pages/Blogs';
 import Services from './pages/Services';
 import Dashboard from './pages/Dashboard';
+import Documents from './pages/Documents';
 
 const App = () => {
   return (
@@ -30,6 +31,7 @@ const App = () => {
               <Route path="/blogs" element={<Blogs />} />
               <Route element={<ProtectedRoute />}>
                 <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/documents" element={<Documents />} />
               </Route>
               
               <Route element={<AdminRoute />}>

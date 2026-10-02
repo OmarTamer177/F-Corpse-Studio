@@ -300,7 +300,7 @@ const Dashboard = () => {
               </p>
             </div>
             
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
               <button 
                 onClick={loadMyRequests}
                 className="btn-monograph" 
@@ -309,6 +309,9 @@ const Dashboard = () => {
               >
                 ↻ Refresh
               </button>
+              <Link to="/documents" className="btn-monograph" style={{ background: 'transparent', color: 'var(--ink-solid)', padding: '10px 18px', fontSize: '0.85rem' }}>
+                📁 Document Archive
+              </Link>
               <Link to="/services" className="btn-monograph" style={{ padding: '10px 20px', fontSize: '0.85rem' }}>
                 + Request New Service
               </Link>
@@ -552,7 +555,7 @@ const Dashboard = () => {
                           </div>
                         </div>
 
-                        <div>
+                        <div style={{ marginBottom: '16px' }}>
                           <span style={{ color: 'var(--ink-muted)', display: 'block', marginBottom: '4px', fontSize: '0.85rem' }}>Full Project Description:</span>
                           <div style={{
                             background: 'var(--paper-white)',
@@ -564,6 +567,89 @@ const Dashboard = () => {
                           }}>
                             {req.message}
                           </div>
+                        </div>
+
+                        {/* Attached Project Documents */}
+                        <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--line-muted)' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
+                            <span style={{ fontFamily: 'var(--font-display)', fontSize: '0.88rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-solid)' }}>
+                              Attached Files & Briefs ({req.documents?.length || 0})
+                            </span>
+                            <Link
+                              to={`/documents?request_id=${req.id}&upload=1`}
+                              style={{
+                                fontSize: '0.82rem',
+                                color: 'var(--green-botanical)',
+                                fontFamily: 'var(--font-display)',
+                                letterSpacing: '0.06em',
+                                textDecoration: 'underline'
+                              }}
+                            >
+                              + Attach File to #SR-{req.id}
+                            </Link>
+                          </div>
+
+                          {(!req.documents || req.documents.length === 0) ? (
+                            <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--ink-muted)', fontStyle: 'italic' }}>
+                              No files attached yet. You can attach design briefs, concept art, or reference audio to this request.
+                            </p>
+                          ) : (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                              {req.documents.map(doc => (
+                                <div
+                                  key={doc.id}
+                                  style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    padding: '8px 12px',
+                                    background: 'var(--paper-white)',
+                                    border: '1px solid var(--line-muted)',
+                                    fontSize: '0.86rem'
+                                  }}
+                                >
+                                  <div>
+                                    <strong style={{ color: 'var(--ink-solid)', marginRight: '8px' }}>{doc.title || doc.filename}</strong>
+                                    <span style={{ fontSize: '0.78rem', color: 'var(--ink-muted)' }}>({doc.file_size_formatted} · {doc.category})</span>
+                                  </div>
+                                  <button
+                                    onClick={async () => {
+                                      try {
+                                        const res = await fetch(`${API_BASE}/documents/${doc.id}/download`, {
+                                          headers: { 'Authorization': `Bearer ${token}` }
+                                        });
+                                        if (res.ok) {
+                                          const blob = await res.blob();
+                                          const url = window.URL.createObjectURL(blob);
+                                          const a = document.createElement('a');
+                                          a.href = url;
+                                          a.download = doc.filename;
+                                          document.body.appendChild(a);
+                                          a.click();
+                                          document.body.removeChild(a);
+                                          setTimeout(() => window.URL.revokeObjectURL(url), 60000);
+                                        }
+                                      } catch (err) {
+                                        alert('Could not download file.');
+                                      }
+                                    }}
+                                    style={{
+                                      background: 'transparent',
+                                      border: 'none',
+                                      color: 'var(--green-botanical)',
+                                      fontFamily: 'var(--font-display)',
+                                      letterSpacing: '0.06em',
+                                      textDecoration: 'underline',
+                                      cursor: 'pointer',
+                                      fontSize: '0.82rem'
+                                    }}
+                                  >
+                                    ↓ Download
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}

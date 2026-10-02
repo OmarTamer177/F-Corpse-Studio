@@ -15,14 +15,15 @@
 
 * **Services Catalog & Commissions**: Interactive showcase of game development, custom shader engineering, audio design, and QA evaluation services with request quotation modals.
 * **Search & Multi-Criteria Filtering**: Dynamic, real-time search across services and articles filtering by category, pricing model, and chronological sorting.
-* **Client Self-Service Portal**: Authenticated customer dashboard to track project statuses, view studio quotes, and update personal account profiles.
+* **File & Document Management**: Full-stack digital archive for project briefs, concept art, reference audio stems, and deliverables. Supports secure multipart uploads, 25MB size limits, format validation, direct linking to Service Requests, streaming downloads, inline previews, and deletion.
+* **Client Self-Service Portal**: Authenticated customer dashboard to track project statuses, view studio quotes, inspect attached files, and update personal account profiles.
 * **Role-Based Access Control (RBAC)**: Multi-tiered permission architecture:
-  * **Administrator**: Complete control over catalog offerings, articles, customer requests, operational statuses, and team role assignments.
-  * **Regular Employee**: Operational access to search, filter, and review requests, update statuses, attach internal progress notes, and adjust estimates without deletion capabilities.
-  * **Customer**: Self-service request tracking and profile management.
+  * **Administrator**: Complete control over catalog offerings, articles, customer requests, documents, operational statuses, and team role assignments.
+  * **Regular Employee**: Operational access to search, filter, and review requests, view all project documents, update statuses, attach internal progress notes, and adjust estimates.
+  * **Customer**: Self-service request tracking, document management (upload, view, download, delete own assets), and profile management.
 * **Team Operations Console**: Dedicated management dashboard for staff members to review incoming commissions and manage organizational members.
-* **Full-Stack Containerization**: One-command orchestration via Docker Compose powering PostgreSQL, Flask with Gunicorn, and a React SPA served through Nginx.
-* **Automated CI/CD Pipeline**: GitHub Actions workflow automatically executing 43 hermetic unit tests and frontend production build checks on every push and pull request.
+* **Full-Stack Containerization**: One-command orchestration via Docker Compose powering PostgreSQL, Flask with Gunicorn, and a React SPA served through Nginx with persistent data and uploads volumes.
+* **Automated CI/CD Pipeline**: GitHub Actions workflow automatically executing 60 hermetic unit tests and frontend production build checks on every push and pull request.
 
 ---
 
@@ -47,15 +48,16 @@ F-Corpse-Studio/
 │   └── workflows/
 │       └── ci.yml                 # Automated CI pipeline
 ├── backend/                       # Python Flask backend service
-│   ├── routes/                    # API Blueprints (auth, requests, services, blogs, contact)
+│   ├── routes/                    # API Blueprints (auth, requests, services, blogs, contact, documents)
+│   ├── uploads/                   # Persistent storage for project documents & media assets
 │   ├── tests/                     # Test suites
-│   │   ├── unit/                  # Hermetic unit tests (43 passing tests)
+│   │   ├── unit/                  # Hermetic unit tests (60 passing tests)
 │   │   ├── e2e/                   # End-to-end integration workflows
 │   │   └── system_test.py         # Full-stack system verification script
 │   ├── app.py                     # Application factory & health checks
 │   ├── config.py                  # Structured config management (dev, test, prod)
 │   ├── extensions.py              # Initialized extensions (db, jwt, cors)
-│   ├── models.py                  # SQLAlchemy schema definitions
+│   ├── models.py                  # SQLAlchemy schema definitions (User, Document, ServiceRequest)
 │   ├── rbac.py                    # Role definitions, permissions, and route decorators
 │   ├── seed_db.py                 # Database seeding script
 │   ├── run_tests.py               # Unified test runner with CLI flags
@@ -67,8 +69,8 @@ F-Corpse-Studio/
 │   ├── src/
 │   │   ├── components/            # Reusable UI components & route guards
 │   │   ├── context/               # AuthContext (auth state, permissions, role helpers)
-│   │   ├── pages/                 # Home, Services, Blogs, Dashboard, Admin, Login, Register
-│   │   ├── services/              # Centralized API client (dynamic environment base URL)
+│   │   ├── pages/                 # Home, Services, Blogs, Dashboard, Documents, Admin, Login, Register
+│   │   ├── services/              # Centralized API client (dynamic environment base URL & upload)
 │   │   └── App.jsx
 │   ├── nginx.conf                 # Production Nginx reverse-proxy & routing config
 │   ├── Dockerfile                 # Multi-stage container (Node 20 -> Nginx Alpine)
@@ -179,7 +181,7 @@ The seed script (`python seed_db.py`) generates the following accounts for evalu
 The project includes both isolated unit test suites and comprehensive end-to-end system verification tests:
 
 ```bash
-# Run all hermetic unit tests (43 tests in in-memory SQLite)
+# Run all hermetic unit tests (60 tests in in-memory SQLite)
 python run_tests.py
 
 # Run unit tests explicitly
@@ -227,6 +229,15 @@ docker compose exec backend python tests/system_test.py
 * `PUT /api/requests/<id>` — Update status, priority, admin notes, and quote (Staff only).
 * `DELETE /api/requests/<id>` — Permanently delete a request (Admin only).
 
+### File & Document Management
+* `POST /api/documents/upload` — Authenticated multipart upload for project files, briefs, and media (Max 25MB).
+* `GET /api/documents` — List user's documents (or all documents for Staff) with search, category, and sort filters.
+* `GET /api/documents/meta` — Document categories, supported formats, and file size limits.
+* `GET /api/documents/<id>` — View document metadata (Owner or Staff).
+* `GET /api/documents/<id>/download` — Secure file streaming/download (supports `?inline=1` for browser preview).
+* `PUT /api/documents/<id>` — Update document title, category, description, or linked request.
+* `DELETE /api/documents/<id>` — Permanently delete document from database and storage.
+
 ### System & Health
 * `GET /api/health` — Returns system status and database connectivity.
 
@@ -235,7 +246,7 @@ docker compose exec backend python tests/system_test.py
 ## Continuous Integration
 
 Every push and pull request to `main` triggers automated validation via GitHub Actions:
-1. **Backend Testing**: Sets up Python 3.11, installs pinned requirements, and executes the 43-test unit test suite.
+1. **Backend Testing**: Sets up Python 3.11, installs pinned requirements, and executes the 60-test unit test suite.
 2. **Frontend Build Verification**: Sets up Node 20, installs dependencies, and verifies clean production asset compilation (`npm run build`).
 
 ---

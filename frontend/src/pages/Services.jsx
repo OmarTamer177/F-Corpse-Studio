@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { API_BASE } from '../services/api';
+import { API_BASE, apiClient } from '../services/api';
 
 const Services = () => {
   const { user, token } = useAuth();
@@ -34,6 +34,8 @@ const Services = () => {
   const [submitting, setSubmitting] = useState(false);
   const [submissionResult, setSubmissionResult] = useState(null);
   const [formError, setFormError] = useState('');
+  const [attachedFile, setAttachedFile] = useState(null);
+  const [uploadedDocInfo, setUploadedDocInfo] = useState(null);
 
   // Debounce search input by 300ms
   useEffect(() => {
@@ -97,6 +99,8 @@ const Services = () => {
   const openRequestModal = (service = null) => {
     setFormError('');
     setSubmissionResult(null);
+    setAttachedFile(null);
+    setUploadedDocInfo(null);
     setFormData({
       name: user ? `${user.first_name || ''} ${user.last_name || ''}`.trim() : '',
       email: user?.email || '',
@@ -114,6 +118,8 @@ const Services = () => {
     setModalOpen(false);
     setSubmissionResult(null);
     setFormError('');
+    setAttachedFile(null);
+    setUploadedDocInfo(null);
   };
 
   const handleInputChange = (e) => {
@@ -182,6 +188,24 @@ const Services = () => {
       const data = await res.json();
       if (!res.ok) {
         throw new Error(data.error || 'Failed to submit service request.');
+      }
+
+      // If a file was attached and user is logged in, upload and link directly to the new request
+      if (attachedFile && token && data.id) {
+        try {
+          const uploadData = new FormData();
+          uploadData.append('file', attachedFile);
+          uploadData.append('request_id', data.id);
+          uploadData.append('title', `${data.service_title} — Brief`);
+          uploadData.append('category', 'Project Brief');
+          const docRes = await apiClient.upload('/documents/upload', uploadData);
+          if (docRes.ok) {
+            const docInfo = await docRes.json();
+            setUploadedDocInfo(docInfo);
+          }
+        } catch (uploadErr) {
+          console.warn('Could not automatically attach file to request:', uploadErr);
+        }
       }
 
       setSubmissionResult(data);
@@ -489,13 +513,27 @@ const Services = () => {
                       <span style={{ color: 'var(--ink-muted)' }}>Submitted:</span>
                       <span>{new Date(submissionResult.created_at).toLocaleString()}</span>
                     </div>
+
+                    {uploadedDocInfo && (
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px', paddingTop: '8px', borderTop: '1px solid var(--line-muted)' }}>
+                        <span style={{ color: 'var(--ink-muted)' }}>Attached Asset:</span>
+                        <strong style={{ color: 'var(--green-botanical)' }}>
+                          📎 {uploadedDocInfo.filename} ({uploadedDocInfo.file_size_formatted})
+                        </strong>
+                      </div>
+                    )}
                   </div>
 
                   <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
                     {user ? (
-                      <Link to="/dashboard" className="btn-monograph" onClick={closeModal}>
-                        Track In Dashboard →
-                      </Link>
+                      <>
+                        <Link to="/dashboard" className="btn-monograph" onClick={closeModal}>
+                          Track In Dashboard →
+                        </Link>
+                        <Link to="/documents" className="btn-monograph" onClick={closeModal} style={{ background: 'transparent', color: 'var(--ink-solid)' }}>
+                          View In Archive →
+                        </Link>
+                      </>
                     ) : (
                       <Link to="/register" className="btn-monograph" onClick={closeModal}>
                         Create Account to Track →
@@ -656,6 +694,94 @@ const Services = () => {
                       className="modal-input"
                       style={{ resize: 'vertical', minHeight: '110px' }}
                     ></textarea>
+                  </div>
+
+                  {/* ── Optional Project File Attachment (Task 10) ── */}
+                  <div className="admin-field" style={{ marginBottom: '22px' }}>
+                    <label className="modal-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap' }}>
+                      <span>Attach Project Brief / Reference Asset (Optional)</span>
+                      <span style={{ fontSize: '0.74rem', color: 'var(--ink-muted)', textTransform: 'none', fontFamily: 'var(--font-sans)' }}>
+                        Max 25MB · PDF, DOCX, PNG, MP3, WAV, ZIP, BLEND
+                      </span>
+                    </label>
+
+                    {user ? (
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        padding: '10px 14px',
+                        background: 'var(--paper-surface)',
+                        border: '1px solid var(--line-muted)'
+                      }}>
+                        <input
+                          type="file"
+                          id="service-request-file-input"
+                          style={{ display: 'none' }}
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files[0]) {
+                              const f = e.target.files[0];
+                              if (f.size > 25 * 1024 * 1024) {
+                                setFormError('Attached file exceeds maximum permitted size of 25MB.');
+                                return;
+                              }
+                              setFormError('');
+                              setAttachedFile(f);
+                            }
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => document.getElementById('service-request-file-input').click()}
+                          className="btn-monograph"
+                          style={{ padding: '6px 14px', fontSize: '0.82rem', background: 'var(--paper-white)' }}
+                        >
+                          {attachedFile ? 'Change File' : 'Browse File…'}
+                        </button>
+
+                        <div style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '0.88rem' }}>
+                          {attachedFile ? (
+                            <span style={{ color: 'var(--green-botanical)', fontWeight: 600 }}>
+                              📎 {attachedFile.name} ({(attachedFile.size / (1024 * 1024)).toFixed(2)} MB)
+                            </span>
+                          ) : (
+                            <span style={{ color: 'var(--ink-muted)' }}>
+                              No file selected. Upload a GDD, reference track, or concept brief.
+                            </span>
+                          )}
+                        </div>
+
+                        {attachedFile && (
+                          <button
+                            type="button"
+                            onClick={() => setAttachedFile(null)}
+                            style={{
+                              background: 'transparent',
+                              border: 'none',
+                              color: '#9c2f25',
+                              cursor: 'pointer',
+                              fontSize: '1rem',
+                              padding: '0 4px'
+                            }}
+                            title="Remove attachment"
+                          >
+                            ✕
+                          </button>
+                        )}
+                      </div>
+                    ) : (
+                      <div style={{
+                        padding: '10px 14px',
+                        background: 'var(--paper-surface)',
+                        border: '1px dashed var(--line-muted)',
+                        fontSize: '0.84rem',
+                        color: 'var(--ink-secondary)'
+                      }}>
+                        <span>
+                          🔒 <Link to="/login" style={{ textDecoration: 'underline', color: 'var(--green-botanical)' }}>Log in</Link> to attach project briefs or audio stems directly with this quote request.
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', alignItems: 'center' }}>

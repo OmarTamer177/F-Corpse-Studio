@@ -126,8 +126,8 @@ class ServiceRequest(db.Model):
 
     user = db.relationship('User', backref=db.backref('service_requests', lazy=True))
 
-    def to_dict(self):
-        return {
+    def to_dict(self, include_documents=True):
+        data = {
             "id": self.id,
             "user_id": self.user_id,
             "service_id": self.service_id,
@@ -143,6 +143,67 @@ class ServiceRequest(db.Model):
             "estimated_cost": self.estimated_cost,
             "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat(),
-            "user_email": self.user.email if self.user else None
+            "user_email": self.user.email if self.user else None,
+            "documents_count": len(self.documents) if hasattr(self, 'documents') and self.documents else 0
         }
+        if include_documents and hasattr(self, 'documents') and self.documents:
+            data["documents"] = [d.to_dict() for d in self.documents]
+        else:
+            data["documents"] = []
+        return data
+
+
+class Document(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    request_id = db.Column(db.Integer, db.ForeignKey('service_request.id', ondelete='SET NULL'), nullable=True)
+    filename = db.Column(db.String(255), nullable=False)
+    stored_filename = db.Column(db.String(255), nullable=False, unique=True)
+    file_path = db.Column(db.String(500), nullable=False)
+    file_size = db.Column(db.Integer, nullable=False)  # size in bytes
+    mime_type = db.Column(db.String(100), nullable=True)
+    file_extension = db.Column(db.String(20), nullable=False)
+    title = db.Column(db.String(200), nullable=True)
+    description = db.Column(db.Text, nullable=True)
+    category = db.Column(db.String(50), default='General', nullable=False)  # 'Brief', 'Audio Asset', 'Concept Art', 'Contract', 'Documentation', 'Deliverable', 'General'
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+    user = db.relationship('User', backref=db.backref('documents', lazy=True, cascade='all, delete-orphan'))
+    service_request = db.relationship('ServiceRequest', backref=db.backref('documents', lazy=True, order_by='Document.created_at.desc()'))
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "request_id": self.request_id,
+            "filename": self.filename,
+            "file_size": self.file_size,
+            "file_size_formatted": self.format_file_size(self.file_size),
+            "mime_type": self.mime_type,
+            "file_extension": self.file_extension,
+            "title": self.title or self.filename,
+            "description": self.description or '',
+            "category": self.category or 'General',
+            "created_at": self.created_at.isoformat(),
+            "updated_at": self.updated_at.isoformat(),
+            "uploader_email": self.user.email if self.user else None,
+            "uploader_name": f"{self.user.first_name} {self.user.last_name}" if self.user else None,
+            "request_title": self.service_request.service_title if self.service_request else None
+        }
+
+    @staticmethod
+    def format_file_size(bytes_size):
+        if not bytes_size:
+            return "0 B"
+        try:
+            size = float(bytes_size)
+            for unit in ['B', 'KB', 'MB', 'GB']:
+                if size < 1024.0:
+                    return f"{size:.1f} {unit}" if unit != 'B' else f"{int(size)} B"
+                size /= 1024.0
+            return f"{size:.1f} TB"
+        except (ValueError, TypeError):
+            return "0 B"
+
 
