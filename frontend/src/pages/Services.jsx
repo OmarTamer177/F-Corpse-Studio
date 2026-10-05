@@ -220,41 +220,45 @@ const Services = () => {
     <>
       <section className="services-hero">
         <div className="container">
-          <span className="hero-super-line">WHAT WE OFFER</span>
-          <h1 className="services-title">OUR<br /><span>SERVICES.</span></h1>
+          <span className="hero-super-line">01 — COMMISSION SPECIFICATIONS</span>
+          <h1 className="services-title">STUDIO<br /><span>DISCIPLINES.</span></h1>
           <p className="hero-editorial-lead">
-            Everything we do is built by hand — from concept art to final code. Here's how we can help bring your vision to life.
+            Every world, mechanic, and acoustic environment in our studio is crafted by hand — from pencil concept sketches to bare-metal shader architecture. We partner with teams on bespoke commissions and deep technical engagements.
           </p>
           <div style={{ marginTop: '28px' }}>
             <button
               className="btn-monograph"
               onClick={() => openRequestModal(null)}
               id="btn-custom-commission"
-              style={{ fontSize: '1rem', padding: '14px 28px' }}
+              style={{ fontSize: '0.95rem', padding: '14px 28px' }}
             >
-              + Submit Service Request
+              + Submit Commission Brief
             </button>
           </div>
         </div>
       </section>
 
-      <section style={{ paddingBottom: '60px' }}>
+      <section style={{ paddingBottom: '70px' }}>
         <div className="container">
 
-          {/* ── Monograph Search & Multi-Criteria Filtering Panel (Task 8) ── */}
-          <div className="monograph-filter-panel">
+          {/* ── Monograph Search & Multi-Criteria Filtering Panel ── */}
+          <div className="monograph-filter-panel" style={{ background: 'var(--paper-white)', border: '1px solid var(--line-ink)', padding: '24px 28px', marginBottom: '36px' }}>
             <div className="search-and-controls-grid">
               
-              {/* Keyword Search Input */}
-              <div className="monograph-search-box">
-                <span className="search-icon">🔍</span>
+              {/* Keyword Search Input with Geometric Search Glyph */}
+              <div className="monograph-search-box" style={{ display: 'flex', alignItems: 'center', border: '1px solid var(--line-muted)', background: 'var(--paper-surface)', padding: '0 14px' }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--ink-muted)" strokeWidth="2" style={{ flexShrink: 0, marginRight: '10px' }}>
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
                 <input
                   type="text"
                   id="services-search-input"
                   className="monograph-search-input"
-                  placeholder="Search services by keyword, discipline, or description…"
+                  placeholder="Search specifications by keyword, discipline, or scope…"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
+                  style={{ border: 'none', background: 'transparent', width: '100%', padding: '12px 0', outline: 'none', font: 'inherit', color: 'var(--ink-solid)' }}
                 />
                 {search && (
                   <button
@@ -263,8 +267,9 @@ const Services = () => {
                     onClick={() => setSearch('')}
                     title="Clear search"
                     id="services-search-clear"
+                    style={{ background: 'transparent', border: 'none', color: 'var(--ink-muted)', cursor: 'pointer', fontFamily: 'monospace', fontSize: '1rem' }}
                   >
-                    ✕
+                    [✕]
                   </button>
                 )}
               </div>
@@ -272,12 +277,13 @@ const Services = () => {
               {/* Multi-Criteria Controls: Pricing & Sorting */}
               <div className="filter-dropdowns-group">
                 <div className="filter-field">
-                  <label htmlFor="services-pricing-select">Engagement Model</label>
+                  <label htmlFor="services-pricing-select" style={{ display: 'block', fontFamily: 'var(--font-display)', fontSize: '0.8rem', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px', color: 'var(--ink-muted)' }}>Engagement Model</label>
                   <select
                     id="services-pricing-select"
                     className="monograph-select"
                     value={selectedPricing}
                     onChange={(e) => setSelectedPricing(e.target.value)}
+                    style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--line-muted)', background: 'var(--paper-surface)', color: 'var(--ink-solid)', font: 'inherit' }}
                   >
                     {pricingOptions.length > 0 ? (
                       pricingOptions.map(opt => (
@@ -294,12 +300,13 @@ const Services = () => {
                 </div>
 
                 <div className="filter-field">
-                  <label htmlFor="services-sort-select">Sort Order</label>
+                  <label htmlFor="services-sort-select" style={{ display: 'block', fontFamily: 'var(--font-display)', fontSize: '0.8rem', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px', color: 'var(--ink-muted)' }}>Order By</label>
                   <select
                     id="services-sort-select"
                     className="monograph-select"
                     value={selectedSort}
                     onChange={(e) => setSelectedSort(e.target.value)}
+                    style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--line-muted)', background: 'var(--paper-surface)', color: 'var(--ink-solid)', font: 'inherit' }}
                   >
                     {sortOptions.length > 0 ? (
                       sortOptions.map(opt => (
@@ -318,9 +325,9 @@ const Services = () => {
               </div>
             </div>
 
-            {/* Discipline Category Chips */}
-            <div className="monograph-chips-bar">
-              <span className="monograph-chip-label">Discipline:</span>
+            {/* Discipline Category Tabs */}
+            <div className="monograph-chips-bar" style={{ marginTop: '20px', display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
+              <span className="monograph-chip-label" style={{ fontFamily: 'var(--font-display)', fontSize: '0.78rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-muted)', marginRight: '6px' }}>DISCIPLINE:</span>
               {(categories.length > 0 ? categories : ['All', 'Game Engineering', 'Visual Art & Design', 'Audio & Sound', 'QA & Evaluation']).map(cat => (
                 <button
                   key={cat}
@@ -328,6 +335,18 @@ const Services = () => {
                   id={`cat-chip-${cat.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}
                   className={`monograph-chip ${selectedCategory === cat ? 'active' : ''}`}
                   onClick={() => setSelectedCategory(cat)}
+                  style={{
+                    padding: '6px 14px',
+                    fontFamily: 'var(--font-display)',
+                    fontSize: '0.82rem',
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    border: '1px solid var(--line-ink)',
+                    background: selectedCategory === cat ? 'var(--ink-solid)' : 'var(--paper-surface)',
+                    color: selectedCategory === cat ? 'var(--paper-white)' : 'var(--ink-solid)',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease'
+                  }}
                 >
                   {cat}
                 </button>
@@ -335,13 +354,13 @@ const Services = () => {
             </div>
 
             {/* Live Results Counter & Reset Action */}
-            <div className="monograph-meta-row">
-              <div className="results-count-text">
-                Showing <span className="results-count-number">{services.length}</span> {services.length === 1 ? 'service' : 'services'}
-                {debouncedSearch && <span> matching “<em>{debouncedSearch}</em>”</span>}
-                {selectedCategory !== 'All' && <span> in <strong>{selectedCategory}</strong></span>}
+            <div className="monograph-meta-row" style={{ marginTop: '18px', paddingTop: '14px', borderTop: '1px solid var(--line-muted)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+              <div className="results-count-text" style={{ fontSize: '0.88rem', color: 'var(--ink-secondary)' }}>
+                DISCIPLINES CATALOG: <strong style={{ color: 'var(--ink-solid)' }}>{services.length}</strong> {services.length === 1 ? 'OFFERING' : 'OFFERINGS'}
+                {debouncedSearch && <span> MATCHING “<em>{debouncedSearch}</em>”</span>}
+                {selectedCategory !== 'All' && <span> IN <strong style={{ color: 'var(--green-botanical)' }}>{selectedCategory.toUpperCase()}</strong></span>}
                 {selectedPricing !== 'all' && (
-                  <span> ({selectedPricing === 'quote' ? 'Custom Quote' : 'Fixed/Tiered'})</span>
+                  <span> ({selectedPricing === 'quote' ? 'CUSTOM QUOTE' : 'TIERED'})</span>
                 )}
               </div>
 
@@ -351,64 +370,86 @@ const Services = () => {
                   id="btn-reset-service-filters"
                   className="btn-reset-filters"
                   onClick={handleResetFilters}
+                  style={{
+                    fontFamily: 'var(--font-display)',
+                    fontSize: '0.8rem',
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    padding: '4px 10px',
+                    border: '1px solid var(--line-ink)',
+                    background: 'transparent',
+                    cursor: 'pointer'
+                  }}
                 >
-                  ↺ Reset Filters
+                  Reset Filters [✕]
                 </button>
               )}
             </div>
           </div>
 
-          {loading && <p className="empty-note">Filtering and loading services…</p>}
-          {error && <p className="empty-note">{error}</p>}
+          {loading && <p className="empty-note">Loading studio specifications…</p>}
+          {error && <p className="empty-note" style={{ color: '#9c2f25' }}>{error}</p>}
 
           {/* Zero Results State */}
           {!loading && !error && services.length === 0 && (
-            <div className="monograph-empty-state">
-              <div className="monograph-empty-icon">🔍</div>
-              <h3 className="monograph-empty-title">NO MATCHING SERVICES FOUND</h3>
-              <p className="monograph-empty-desc">
-                We couldn't find any services matching your search and filter parameters. Try clearing your filters or exploring our other disciplines.
+            <div className="monograph-empty-state" style={{ background: 'var(--paper-white)', border: '1px dashed var(--line-ink)', padding: '50px 30px', textAlign: 'center' }}>
+              <span className="hero-super-line">SPECIFICATION QUERY</span>
+              <h3 className="monograph-empty-title" style={{ marginTop: '8px' }}>NO MATCHING DISCIPLINES CATALOGUED</h3>
+              <p className="monograph-empty-desc" style={{ maxWidth: '520px', margin: '0 auto 24px' }}>
+                We could not locate any active studio offerings matching your selected parameters. Adjust your search keywords or clear discipline filters.
               </p>
               <button
                 type="button"
                 className="btn-monograph"
                 onClick={handleResetFilters}
-                style={{ fontSize: '0.88rem', padding: '10px 20px' }}
+                style={{ fontSize: '0.85rem', padding: '10px 22px' }}
               >
                 Clear All Search & Filters
               </button>
             </div>
           )}
 
-          {/* Service Cards Grid */}
+          {/* Service Cards Grid — Handcrafted Architectural Commission Studies */}
           {!loading && !error && services.length > 0 && (
-            <div className="service-grid">
-              {services.map(service => (
-                <div key={service.id} className="service-card" style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
-                    {service.category && (
-                      <span className="monograph-category-tag">{service.category}</span>
-                    )}
-                    {service.icon && (
-                      <div className="service-card-icon" style={{ marginBottom: '8px' }}>{service.icon}</div>
-                    )}
+            <div className="monograph-projects-grid">
+              {services.map((service, index) => (
+                <div
+                  key={service.id}
+                  className="monograph-project-card"
+                  id={`service-study-${service.id}`}
+                >
+                  <div className="project-card-top-bar">
+                    <span className="technical-discipline-tag">
+                      {service.category || 'STUDIO DISCIPLINE'}
+                    </span>
+                    <span className="project-code-tag">
+                      SPEC // {String(index + 1).padStart(2, '0')}
+                    </span>
                   </div>
-                  <h3 className="service-card-title">{service.title}</h3>
-                  <p className="service-card-description">{service.description}</p>
+
+                  <h3 className="project-card-title">{service.title}</h3>
+
+                  <p className="project-card-desc">
+                    {service.description}
+                  </p>
                   
-                  <div style={{ marginTop: 'auto', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--line-muted)' }}>
-                    {service.price && (
-                      <div className="service-card-price" style={{ borderTop: 'none', paddingTop: 0 }}>
-                        {service.price}
-                      </div>
-                    )}
+                  <div className="project-card-footer">
+                    <div>
+                      <span style={{ display: 'block', fontSize: '0.72rem', fontFamily: 'var(--font-display)', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-muted)' }}>
+                        ENGAGEMENT MODEL
+                      </span>
+                      <strong style={{ fontFamily: 'var(--font-display)', fontSize: '0.92rem', letterSpacing: '0.06em', color: 'var(--green-botanical)' }}>
+                        {service.price || 'COMMISSION / QUOTE'}
+                      </strong>
+                    </div>
+
                     <button
                       className="btn-monograph"
                       onClick={() => openRequestModal(service)}
                       id={`request-btn-${service.id}`}
-                      style={{ fontSize: '0.85rem', padding: '8px 16px' }}
+                      style={{ fontSize: '0.82rem', padding: '8px 16px' }}
                     >
-                      Request Service →
+                      Initialize Brief →
                     </button>
                   </div>
                 </div>
@@ -418,7 +459,7 @@ const Services = () => {
 
           {/* Bespoke Project Prompt */}
           <div className="service-custom-banner" style={{
-            marginTop: '50px',
+            marginTop: '56px',
             padding: '36px',
             background: 'var(--paper-white)',
             border: '1px solid var(--line-ink)',
@@ -426,12 +467,15 @@ const Services = () => {
             flexWrap: 'wrap',
             justifyContent: 'space-between',
             alignItems: 'center',
-            gap: '24px'
+            gap: '24px',
+            position: 'relative'
           }}>
+            <div style={{ position: 'absolute', top: '4px', left: '6px', fontFamily: 'monospace', fontSize: '11px', color: 'var(--ink-muted)' }}>+</div>
+            <div style={{ position: 'absolute', bottom: '4px', right: '6px', fontFamily: 'monospace', fontSize: '11px', color: 'var(--ink-muted)' }}>+</div>
             <div>
-              <span className="hero-super-line" style={{ display: 'block', marginBottom: '6px' }}>BESPOKE COMMISSIONS</span>
-              <h3 style={{ fontSize: '1.4rem', letterSpacing: '0.06em', margin: '0 0 8px 0' }}>HAVE A UNIQUE OR MULTI-DISCIPLINARY PROJECT?</h3>
-              <p style={{ margin: 0, color: 'var(--ink-secondary)', maxWidth: '640px', lineHeight: 1.6 }}>
+              <span className="hero-super-line" style={{ display: 'block', marginBottom: '6px' }}>BESPOKE COMMISSIONS & R&D</span>
+              <h3 style={{ fontSize: '1.4rem', letterSpacing: '0.06em', margin: '0 0 8px 0' }}>HAVE A UNIQUE OR MULTI-DISCIPLINARY INQUIRY?</h3>
+              <p style={{ margin: 0, color: 'var(--ink-secondary)', maxWidth: '640px', lineHeight: 1.6, fontFamily: 'var(--font-editorial)' }}>
                 We accept tailored project briefs for game prototypes, audio suites, visual art systems, and engineering consulting. Submit a detailed request and our directors will prepare a scope analysis.
               </p>
             </div>
@@ -458,7 +502,7 @@ const Services = () => {
               <div>
                 <span className="hero-super-line">STUDIO COMMISSION</span>
                 <h2 style={{ fontSize: '1.5rem', letterSpacing: '0.08em', margin: '4px 0 0 0' }}>
-                  {submissionResult ? 'REQUEST RECEIVED' : 'SUBMIT SERVICE REQUEST'}
+                  {submissionResult ? 'COMMISSION INQUIRY LOGGED' : 'SUBMIT SERVICE REQUEST'}
                 </h2>
               </div>
               <button
@@ -474,9 +518,11 @@ const Services = () => {
               {submissionResult ? (
                 /* Success State */
                 <div style={{ textAlign: 'center', padding: '20px 0' }}>
-                  <div style={{ fontSize: '3rem', marginBottom: '16px' }}>✦</div>
-                  <span className="request-status-badge badge-pending" style={{ fontSize: '0.85rem', marginBottom: '14px' }}>
-                    STATUS: PENDING REVIEW
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', letterSpacing: '0.12em', color: 'var(--green-botanical)', marginBottom: '12px' }}>
+                    [RECORD VERIFIED // #SR-{submissionResult.id}]
+                  </div>
+                  <span className="architectural-status-badge status-pending" style={{ fontSize: '0.82rem', marginBottom: '14px' }}>
+                    STATUS // PENDING STUDIO REVIEW
                   </span>
                   <h3 style={{ fontSize: '1.4rem', letterSpacing: '0.06em', marginBottom: '12px' }}>
                     Request #{submissionResult.id} Logged Successfully

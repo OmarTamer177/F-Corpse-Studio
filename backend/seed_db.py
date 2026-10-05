@@ -223,3 +223,64 @@ with app.app_context():
     db.session.commit()
     print(f"Created {len(sample_requests)} sample service requests.")
 
+    print("Seeding clients...")
+    from models import Client, Project
+    client1 = Client(
+        name="Elena Vance",
+        company="Aetheria Studios",
+        email="elena.vance@studio.com",
+        phone="+1 555-019-8374",
+        notes="Strategic indie partner working on narrative atmospheric games.",
+        user_id=customer.id
+    )
+    client2 = Client(
+        name="Apex Interactive",
+        company="Apex Interactive Ltd",
+        email="commissions@apex-games.io",
+        phone="+44 20 7946 0912",
+        notes="Publisher partner commissioning custom shader architecture."
+    )
+    db.session.add_all([client1, client2])
+    db.session.commit()
+
+    print("Seeding projects...")
+    proj1 = Project(
+        name="Project Chrono: Action RPG Prototype",
+        code="PRJ-01",
+        description="Core physics, hand-tuned player movement, and bare-metal lighting architecture for atmospheric action RPG.",
+        status="In Progress",
+        client_id=client1.id,
+        start_date=(datetime.utcnow() - timedelta(days=30)).date(),
+        deadline=(datetime.utcnow() + timedelta(days=60)).date(),
+        budget="$45,000 USD"
+    )
+    proj1.team_members = [admin, employee]
+
+    proj2 = Project(
+        name="Acoustic Landscape Suite",
+        code="PRJ-02",
+        description="Dynamic soundscape generation and adaptive environmental audio for subterranean cavern environments.",
+        status="Completed",
+        client_id=client2.id,
+        start_date=(datetime.utcnow() - timedelta(days=90)).date(),
+        deadline=(datetime.utcnow() - timedelta(days=10)).date(),
+        budget="$18,500 USD"
+    )
+    proj2.team_members = [employee]
+
+    proj3 = Project(
+        name="Volumetric Fog Shader Pipeline",
+        code="PRJ-03",
+        description="Custom HLSL compute shader pipeline for real-time botanical fog scattering.",
+        status="Not Started",
+        client_id=client1.id,
+        start_date=(datetime.utcnow() + timedelta(days=15)).date(),
+        deadline=(datetime.utcnow() + timedelta(days=75)).date(),
+        budget="$12,000 USD"
+    )
+    proj3.team_members = [admin]
+
+    db.session.add_all([proj1, proj2, proj3])
+    db.session.commit()
+    print("Created 3 initial workshop projects with staff assignments.")
+

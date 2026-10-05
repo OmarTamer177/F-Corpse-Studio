@@ -4,9 +4,8 @@ import os
 import time
 import argparse
 
-# Set testing environment variables before any application imports
-os.environ.setdefault('FLASK_ENV', 'testing')
-os.environ.setdefault('DATABASE_URL', 'sqlite:///:memory:')
+ORIG_FLASK_ENV = os.environ.get('FLASK_ENV')
+ORIG_DATABASE_URL = os.environ.get('DATABASE_URL')
 
 # Ensure backend root is on sys.path
 BACKEND_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -44,6 +43,17 @@ def run_unit_tests():
     return result.wasSuccessful()
 
 def run_e2e_tests():
+    # Restore target environment (e.g. Docker PostgreSQL)
+    if ORIG_FLASK_ENV:
+        os.environ['FLASK_ENV'] = ORIG_FLASK_ENV
+    elif 'FLASK_ENV' in os.environ:
+        del os.environ['FLASK_ENV']
+
+    if ORIG_DATABASE_URL:
+        os.environ['DATABASE_URL'] = ORIG_DATABASE_URL
+    elif 'DATABASE_URL' in os.environ:
+        del os.environ['DATABASE_URL']
+
     print("\n" + "=" * 70)
     print("FCORPSE STUDIO — END-TO-END / INTEGRATION SUITE")
     print("Requires live PostgreSQL database or seeded instance")

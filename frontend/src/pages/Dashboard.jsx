@@ -25,6 +25,10 @@ const Dashboard = () => {
   const [requestFilter, setRequestFilter] = useState('All');
   const [expandedRequestId, setExpandedRequestId] = useState(null);
 
+  // ── Contracted Client Projects State (Task 11) ──
+  const [myProjects, setMyProjects] = useState([]);
+  const [loadingProjects, setLoadingProjects] = useState(true);
+
   useEffect(() => {
     if (user) {
       setFormData({
@@ -40,8 +44,26 @@ const Dashboard = () => {
   useEffect(() => {
     if (token) {
       loadMyRequests();
+      loadMyProjects();
     }
   }, [token]);
+
+  const loadMyProjects = async () => {
+    setLoadingProjects(true);
+    try {
+      const res = await fetch(`${API_BASE}/projects`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setMyProjects(data);
+      }
+    } catch (err) {
+      console.warn('Could not load client projects', err);
+    } finally {
+      setLoadingProjects(false);
+    }
+  };
 
   const loadMyRequests = async () => {
     setLoadingRequests(true);
@@ -656,6 +678,110 @@ const Dashboard = () => {
                   </div>
                 );
               })}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ── Section 03: Contracted Studio Projects (Task 11) ── */}
+      <section style={{ paddingBottom: '90px' }} id="contracted-projects">
+        <div className="container">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+            <div>
+              <span className="section-datum">03 — CONTRACTED STUDIO PROJECTS</span>
+              <h2 style={{ fontSize: '1.4rem', letterSpacing: '0.08em', margin: '4px 0 0 0' }}>
+                ACTIVE COMMISSIONS & DELIVERABLES
+              </h2>
+            </div>
+
+            <Link
+              to="/projects"
+              className="btn-monograph"
+              style={{ fontSize: '0.85rem', padding: '10px 18px' }}
+            >
+              Open Workshop Pipeline →
+            </Link>
+          </div>
+
+          {loadingProjects && <p className="empty-note">Loading your contracted projects…</p>}
+
+          {!loadingProjects && myProjects.length === 0 && (
+            <div style={{
+              background: 'var(--paper-white)',
+              border: '1px dashed var(--line-ink)',
+              padding: '40px 30px',
+              textAlign: 'center'
+            }}>
+              <span className="hero-super-line">WORKSHOP PIPELINE</span>
+              <h3 style={{ fontSize: '1.25rem', letterSpacing: '0.06em', margin: '8px 0 10px 0' }}>
+                NO CONTRACTED PROJECTS INITIALIZED YET
+              </h3>
+              <p style={{ maxWidth: '520px', margin: '0 auto 20px', color: 'var(--ink-secondary)', fontFamily: 'var(--font-editorial)' }}>
+                Once your submitted service request is approved and commissioned, your active deliverables and assigned engineering roster will be tracked here.
+              </p>
+              <Link
+                to="/services"
+                className="btn-monograph"
+                style={{ fontSize: '0.85rem', padding: '10px 20px' }}
+              >
+                Browse Disciplines Catalog
+              </Link>
+            </div>
+          )}
+
+          {!loadingProjects && myProjects.length > 0 && (
+            <div className="monograph-projects-grid">
+              {myProjects.map(proj => (
+                <div key={proj.id} className="monograph-project-card">
+                  <div className="project-card-top-bar">
+                    <span className="project-code-tag">{proj.code}</span>
+                    <span className={`architectural-status-badge ${proj.status === 'Completed' ? 'status-completed' : (proj.status === 'In Progress' ? 'status-in-progress' : (proj.status === 'On Hold' ? 'status-on-hold' : 'status-not-started'))}`}>
+                      {proj.status}
+                    </span>
+                  </div>
+
+                  <h3 className="project-card-title">{proj.name}</h3>
+
+                  <p className="project-card-desc">
+                    {proj.description || 'Milestone scope briefing in progress.'}
+                  </p>
+
+                  <div className="project-card-roster">
+                    <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-display)', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-muted)', width: '100%', marginBottom: '2px' }}>
+                      ASSIGNED ARTISANS & ENGINEERS //
+                    </span>
+                    {(proj.team_members && proj.team_members.length > 0) ? (
+                      proj.team_members.map(member => (
+                        <span key={member.id} className="artisan-chip">
+                          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--green-botanical)' }}></span>
+                          {member.name}
+                        </span>
+                      ))
+                    ) : (
+                      <span style={{ fontSize: '0.78rem', color: 'var(--ink-muted)', fontStyle: 'italic' }}>
+                        Studio leads being assigned.
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="project-card-footer">
+                    <div>
+                      {proj.deadline && (
+                        <div style={{ fontSize: '0.76rem', color: 'var(--ink-muted)', fontFamily: 'var(--font-display)', letterSpacing: '0.06em' }}>
+                          DEADLINE: <strong style={{ color: 'var(--ink-solid)' }}>{proj.deadline}</strong>
+                        </div>
+                      )}
+                    </div>
+                    <Link
+                      to="/projects"
+                      className="btn-monograph"
+                      style={{ fontSize: '0.78rem', padding: '6px 12px', background: 'transparent' }}
+                    >
+                      View Details →
+                    </Link>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>

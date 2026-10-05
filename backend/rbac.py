@@ -24,6 +24,12 @@ ROLE_PERMISSIONS = {
         'documents:view_all',
         'documents:upload',
         'documents:delete',
+        'projects:view_all',
+        'projects:create',
+        'projects:update',
+        'projects:delete',
+        'clients:manage',
+        'clients:view_all',
     },
     ROLE_EMPLOYEE: {
         'requests:view_all',
@@ -32,6 +38,11 @@ ROLE_PERMISSIONS = {
         'users:view',
         'documents:view_all',
         'documents:upload',
+        'projects:view_all',
+        'projects:create',
+        'projects:update',
+        'clients:manage',
+        'clients:view_all',
     },
     ROLE_CUSTOMER: {
         'requests:create',
@@ -40,6 +51,8 @@ ROLE_PERMISSIONS = {
         'documents:upload',
         'documents:view_own',
         'documents:delete_own',
+        'projects:view_own',
+        'clients:view_own',
     },
 }
 

@@ -13,17 +13,18 @@
 
 ## Key Features
 
-* **Services Catalog & Commissions**: Interactive showcase of game development, custom shader engineering, audio design, and QA evaluation services with request quotation modals.
+* **Client Project Management Platform**: Simplified full-stack project tracking platform connecting studio projects, client accounts, and assigned multidisciplinary team members. Supports complete lifecycle management (`Not Started`, `In Progress`, `On Hold`, `Completed`), client linkage, multi-team assignments, query filtering, and KPI metrics.
+* **Services Catalog & Commissions**: Interactive showcase of game development, custom shader engineering, audio design, and QA evaluation services with request quotation modals. Redesigned with architectural commission monograph styling and custom SVG glyphs.
 * **Search & Multi-Criteria Filtering**: Dynamic, real-time search across services and articles filtering by category, pricing model, and chronological sorting.
 * **File & Document Management**: Full-stack digital archive for project briefs, concept art, reference audio stems, and deliverables. Supports secure multipart uploads, 25MB size limits, format validation, direct linking to Service Requests, streaming downloads, inline previews, and deletion.
-* **Client Self-Service Portal**: Authenticated customer dashboard to track project statuses, view studio quotes, inspect attached files, and update personal account profiles.
+* **Client Self-Service Portal**: Authenticated customer dashboard to track project statuses, view studio quotes, inspect attached files, and inspect contracted studio projects.
 * **Role-Based Access Control (RBAC)**: Multi-tiered permission architecture:
-  * **Administrator**: Complete control over catalog offerings, articles, customer requests, documents, operational statuses, and team role assignments.
-  * **Regular Employee**: Operational access to search, filter, and review requests, view all project documents, update statuses, attach internal progress notes, and adjust estimates.
-  * **Customer**: Self-service request tracking, document management (upload, view, download, delete own assets), and profile management.
-* **Team Operations Console**: Dedicated management dashboard for staff members to review incoming commissions and manage organizational members.
+  * **Administrator**: Complete control over catalog offerings, articles, customer requests, documents, operational statuses, team role assignments, client profiles, and permanent project deletion.
+  * **Regular Employee**: Operational access to search, filter, and review requests, view all project documents, update statuses, attach internal progress notes, adjust estimates, and create/update studio projects. *Protected from project deletion and role assignment.*
+  * **Customer**: Self-service request tracking, document management (upload, view, download, delete own assets), contracted project delivery tracking, and profile management.
+* **Architectural Workshop Ledger**: Tabbed administrative operations console (`01 // PROJECTS`, `02 // COMMISSIONS`, `03 // SERVICES`, `04 // DISPATCHES`, `05 // ROSTER`) eliminating generic SaaS UI and aligning seamlessly with the studio's monograph aesthetic.
 * **Full-Stack Containerization**: One-command orchestration via Docker Compose powering PostgreSQL, Flask with Gunicorn, and a React SPA served through Nginx with persistent data and uploads volumes.
-* **Automated CI/CD Pipeline**: GitHub Actions workflow automatically executing 60 hermetic unit tests and frontend production build checks on every push and pull request.
+* **Automated CI/CD Pipeline**: GitHub Actions workflow automatically executing 70 hermetic unit tests and frontend production build checks on every push and pull request.
 
 ---
 
@@ -46,18 +47,18 @@
 F-Corpse-Studio/
 ├── .github/
 │   └── workflows/
-│       └── ci.yml                 # Automated CI pipeline
+│       └── ci.yml                 # Automated CI pipeline (70 unit tests + build)
 ├── backend/                       # Python Flask backend service
-│   ├── routes/                    # API Blueprints (auth, requests, services, blogs, contact, documents)
+│   ├── routes/                    # API Blueprints (auth, requests, services, blogs, contact, documents, clients, projects)
 │   ├── uploads/                   # Persistent storage for project documents & media assets
 │   ├── tests/                     # Test suites
-│   │   ├── unit/                  # Hermetic unit tests (60 passing tests)
+│   │   ├── unit/                  # Hermetic unit tests (70 passing tests in SQLite)
 │   │   ├── e2e/                   # End-to-end integration workflows
 │   │   └── system_test.py         # Full-stack system verification script
 │   ├── app.py                     # Application factory & health checks
 │   ├── config.py                  # Structured config management (dev, test, prod)
 │   ├── extensions.py              # Initialized extensions (db, jwt, cors)
-│   ├── models.py                  # SQLAlchemy schema definitions (User, Document, ServiceRequest)
+│   ├── models.py                  # SQLAlchemy schema definitions (User, Document, ServiceRequest, Client, Project)
 │   ├── rbac.py                    # Role definitions, permissions, and route decorators
 │   ├── seed_db.py                 # Database seeding script
 │   ├── run_tests.py               # Unified test runner with CLI flags
@@ -69,7 +70,7 @@ F-Corpse-Studio/
 │   ├── src/
 │   │   ├── components/            # Reusable UI components & route guards
 │   │   ├── context/               # AuthContext (auth state, permissions, role helpers)
-│   │   ├── pages/                 # Home, Services, Blogs, Dashboard, Documents, Admin, Login, Register
+│   │   ├── pages/                 # Home, Services, Blogs, Dashboard, Documents, Projects, Admin, Login, Register
 │   │   ├── services/              # Centralized API client (dynamic environment base URL & upload)
 │   │   └── App.jsx
 │   ├── nginx.conf                 # Production Nginx reverse-proxy & routing config
@@ -168,9 +169,9 @@ The seed script (`python seed_db.py`) generates the following accounts for evalu
 
 | Role | Email | Password | Access Capabilities |
 | :--- | :--- | :--- | :--- |
-| **Administrator** | `admin@fcorpse.com` | `admin123` | **Full Platform Control:** Manage catalog services, publish articles, view all customer requests, update quotes, permanently delete records, and assign user roles. |
-| **Regular Employee** | `employee@fcorpse.com` | `employee123` | **Operational Access:** View and search all customer requests, view KPI analytics, update status and admin progress notes, and adjust estimates. *Cannot delete requests or alter service offerings.* |
-| **Customer** | `elena.vance@studio.com` | `customer123` | **Client Access:** Submit requests, track personal submissions in Client Dashboard, manage account profile. *Forbidden from staff endpoints.* |
+| **Administrator** | `admin@fcorpse.com` | `admin123` | **Full Platform Control:** Manage catalog services, publish articles, view all customer requests, update quotes, permanently delete records, assign user roles, manage clients, and delete projects. |
+| **Regular Employee** | `employee@fcorpse.com` | `employee123` | **Operational Access:** View and search all customer requests, create and edit studio projects, assign team members, update progress notes, and adjust estimates. *Cannot delete projects/requests or alter service offerings.* |
+| **Customer** | `elena.vance@studio.com` | `customer123` | **Client Access:** Submit requests, track personal submissions in Client Dashboard, inspect contracted studio project milestones, manage account profile. *Forbidden from staff endpoints.* |
 
 *New customer accounts can also be created via the public registration page.*
 
@@ -181,7 +182,7 @@ The seed script (`python seed_db.py`) generates the following accounts for evalu
 The project includes both isolated unit test suites and comprehensive end-to-end system verification tests:
 
 ```bash
-# Run all hermetic unit tests (60 tests in in-memory SQLite)
+# Run all hermetic unit tests (70 tests in in-memory SQLite)
 python run_tests.py
 
 # Run unit tests explicitly
@@ -193,7 +194,8 @@ python backend/tests/system_test.py
 
 ### Running Tests in Docker:
 ```bash
-docker compose exec backend python run_tests.py
+docker compose exec backend python run_tests.py --mode unit
+docker compose exec backend python run_tests.py --mode all
 docker compose exec backend python tests/system_test.py
 ```
 
@@ -238,7 +240,21 @@ docker compose exec backend python tests/system_test.py
 * `PUT /api/documents/<id>` — Update document title, category, description, or linked request.
 * `DELETE /api/documents/<id>` — Permanently delete document from database and storage.
 
+### Client & Project Management Platform (Task 11)
+* `GET /api/projects` — List projects with status, client, search, and member filters (Staff sees all; Customers see only contracted client projects).
+* `GET /api/projects/stats` — Aggregate project KPI counters across workflow statuses (Staff only).
+* `POST /api/projects` — Create a new project with client linkage and multidisciplinary team assignment (Staff only).
+* `GET /api/projects/<id>` — Inspect full project detail with associated team and client metadata (Staff or contracted client).
+* `PUT /api/projects/<id>` — Update project title, description, workflow status, client, or assigned team members (Staff only).
+* `DELETE /api/projects/<id>` — Permanently delete project record (Admin only).
+* `GET /api/clients` — List all registered client companies and profiles (Staff only).
+* `POST /api/clients` — Register a new client company (Staff only).
+* `GET /api/clients/<id>` — View client company profile and historical projects (Staff or linked Customer).
+* `PUT /api/clients/<id>` — Update client details, email, contact, or website (Admin only).
+* `DELETE /api/clients/<id>` — Permanently remove client profile (Admin only).
+
 ### System & Health
+* `GET /` — API root status descriptor with direct link to Frontend web application (`http://localhost:3000`).
 * `GET /api/health` — Returns system status and database connectivity.
 
 ---
@@ -246,7 +262,7 @@ docker compose exec backend python tests/system_test.py
 ## Continuous Integration
 
 Every push and pull request to `main` triggers automated validation via GitHub Actions:
-1. **Backend Testing**: Sets up Python 3.11, installs pinned requirements, and executes the 60-test unit test suite.
+1. **Backend Testing**: Sets up Python 3.11, installs pinned requirements, and executes the 70-test hermetic unit test suite.
 2. **Frontend Build Verification**: Sets up Node 20, installs dependencies, and verifies clean production asset compilation (`npm run build`).
 
 ---

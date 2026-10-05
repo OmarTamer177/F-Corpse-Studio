@@ -207,3 +207,109 @@ class Document(db.Model):
             return "0 B"
 
 
+# ══════════════════════════════════════════════════════════════════════════════
+# Task 11 — Client Project Management Platform Models
+# ══════════════════════════════════════════════════════════════════════════════
+
+project_team_members = db.Table(
+    'project_team_members',
+    db.Column('project_id', db.Integer, db.ForeignKey('projects.id', ondelete='CASCADE'), primary_key=True),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), primary_key=True),
+    db.Column('assigned_at', db.DateTime, default=datetime.utcnow)
+)
+
+
+class Client(db.Model):
+    __tablename__ = 'clients'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150), nullable=False)
+    company = db.Column(db.String(150), nullable=True)
+    email = db.Column(db.String(120), nullable=False)
+    phone = db.Column(db.String(50), nullable=True)
+    notes = db.Column(db.Text, nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='SET NULL'), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+    user = db.relationship('User', backref=db.backref('clients', lazy=True))
+    projects = db.relationship('Project', backref='client', lazy=True, cascade='all, delete-orphan')
+
+    def to_dict(self, include_projects=False):
+        data = {
+            "id": self.id,
+            "name": self.name,
+            "company": self.company,
+            "email": self.email,
+            "phone": self.phone,
+            "notes": self.notes,
+            "user_id": self.user_id,
+            "created_at": self.created_at.isoformat(),
+            "updated_at": self.updated_at.isoformat(),
+            "projects_count": len(self.projects) if hasattr(self, 'projects') and self.projects else 0
+        }
+        if include_projects and hasattr(self, 'projects') and self.projects:
+            data["projects"] = [p.to_dict(include_client=False) for p in self.projects]
+        return data
+
+
+class Project(db.Model):
+    __tablename__ = 'projects'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    code = db.Column(db.String(50), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    status = db.Column(db.String(50), default='Not Started', nullable=False)  # 'Not Started', 'In Progress', 'On Hold', 'Completed'
+    client_id = db.Column(db.Integer, db.ForeignKey('clients.id', ondelete='CASCADE'), nullable=False)
+    service_request_id = db.Column(db.Integer, db.ForeignKey('service_request.id', ondelete='SET NULL'), nullable=True)
+    start_date = db.Column(db.Date, nullable=True)
+    deadline = db.Column(db.Date, nullable=True)
+    budget = db.Column(db.String(100), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+    service_request = db.relationship('ServiceRequest', backref=db.backref('projects', lazy=True))
+    team_members = db.relationship(
+        'User',
+        secondary=project_team_members,
+        lazy='subquery',
+        backref=db.backref('assigned_projects', lazy=True)
+    )
+
+    def to_dict(self, include_client=True):
+        data = {
+            "id": self.id,
+            "name": self.name,
+            "code": self.code,
+            "description": self.description or '',
+            "status": self.status,
+            "client_id": self.client_id,
+            "service_request_id": self.service_request_id,
+            "start_date": self.start_date.isoformat() if self.start_date else None,
+            "deadline": self.deadline.isoformat() if self.deadline else None,
+            "budget": self.budget or '',
+            "created_at": self.created_at.isoformat(),
+            "updated_at": self.updated_at.isoformat(),
+            "team_members": [
+                {
+                    "id": m.id,
+                    "name": f"{m.first_name} {m.last_name}".strip() or m.email,
+                    "email": m.email,
+                    "role": m.role
+                }
+                for m in (self.team_members or [])
+            ]
+        }
+        if include_client and self.client:
+            data["client"] = {
+                "id": self.client.id,
+                "name": self.client.name,
+                "company": self.client.company,
+                "email": self.client.email,
+                "phone": self.client.phone
+            }
+        return data
+
+
+

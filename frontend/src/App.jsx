@@ -14,6 +14,7 @@ import Blogs from './pages/Blogs';
 import Services from './pages/Services';
 import Dashboard from './pages/Dashboard';
 import Documents from './pages/Documents';
+import Projects from './pages/Projects';
 
 const App = () => {
   return (
@@ -32,6 +33,7 @@ const App = () => {
               <Route element={<ProtectedRoute />}>
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/documents" element={<Documents />} />
+                <Route path="/projects" element={<Projects />} />
               </Route>
               
               <Route element={<AdminRoute />}>

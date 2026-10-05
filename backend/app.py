@@ -34,6 +34,8 @@ def create_app(config_name_or_dict=None):
     from routes.services import services_bp
     from routes.requests import requests_bp
     from routes.documents import documents_bp
+    from routes.clients import clients_bp
+    from routes.projects import projects_bp
     
     # Register blueprints
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
@@ -42,6 +44,8 @@ def create_app(config_name_or_dict=None):
     app.register_blueprint(services_bp, url_prefix='/api/services')
     app.register_blueprint(requests_bp, url_prefix='/api/requests')
     app.register_blueprint(documents_bp, url_prefix='/api/documents')
+    app.register_blueprint(clients_bp, url_prefix='/api/clients')
+    app.register_blueprint(projects_bp, url_prefix='/api/projects')
 
     # Ensure upload directory exists
     upload_folder = app.config.get('UPLOAD_FOLDER')
@@ -71,6 +75,24 @@ def create_app(config_name_or_dict=None):
             except Exception as e:
                 import logging
                 logging.getLogger(__name__).warning(f"Database initialization deferred or skipped: {e}")
+
+    # Root Endpoint with guide to Frontend
+    @app.route('/', methods=['GET'])
+    def root():
+        return jsonify({
+            "service": "F-Corpse Studio API",
+            "status": "online",
+            "frontend_url": "http://localhost:3000/",
+            "message": "F-Corpse Studio Backend API is active. Open http://localhost:3000/ in your browser for the web application.",
+            "endpoints": [
+                "/api/health",
+                "/api/projects",
+                "/api/clients",
+                "/api/services",
+                "/api/blogs",
+                "/api/requests"
+            ]
+        }), 200
 
     # Health Check Endpoint for Docker & Orchestration
     @app.route('/api/health', methods=['GET'])
